@@ -165,37 +165,3 @@ function sqr_to!(a, ata::SparseMatrix{T}) where {T}
         end
     end
 end
-
-g = Graph{Int64}(3)
-g[1, 2] = 5
-g[1, 3] = 6
-g[2, 1] = 1
-g[2, 2] = 4
-g[2, 3] = 7
-g[3, 1] = 2
-g[3, 2] = 3
-g[3, 3] = 8
-a = from_graph(g, 3, 3)
-
-clear!(g)
-g[1, 1] = -1
-g[1, 3] = 1
-g[2, 1] = -1
-g[2, 3] = 1
-g[3, 1] = -1
-g[3, 3] = 1
-b = from_graph(g, 3, 3)
-
-clear!(g)
-g[1, 1] = -1
-g[1, 2] = 5
-g[1, 3] = 7
-g[2, 1] = 0
-g[2, 2] = 4
-g[2, 3] = 8
-g[3, 1] = 1
-g[3, 2] = 3
-g[3, 3] = 9
-e = from_graph(g, 3, 3)
-
-c = add(a, b)
