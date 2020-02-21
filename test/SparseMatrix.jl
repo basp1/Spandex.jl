@@ -49,7 +49,7 @@ end
     graph[3, 2] = 31
     graph[3, 1] = 30
 
-    local b = from_graph(graph, 3,4)
+    local b = from_graph(graph, 3, 4)
 
     @test equals(a, b)
     @test equals(b, a)
