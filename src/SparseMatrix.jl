@@ -318,7 +318,7 @@ function Base.:sort!(sm::SparseMatrix{T}) where {T}
 
     for j = 1:sm.column_count
         local range = sm.columns[j]:sm.columns[j+1]-1
-        local perm = sm.columns[j] .+ sortperm(sm.columns_rows[range]) .- 1
+        local perm = (sm.columns[j] - 1) .+ sortperm(sm.columns_rows[range])
         sm.columns_rows[range] = sm.columns_rows[perm]
         new_indices[range] = new_indices[perm]
     end
@@ -327,7 +327,7 @@ function Base.:sort!(sm::SparseMatrix{T}) where {T}
 
     for j = 1:sm.row_count
         local range = sm.rows[j]:sm.rows[j+1]-1
-        local perm = sm.rows[j] .+ sortperm(sm.rows_columns[range]) .- 1
+        local perm = (sm.rows[j] - 1) .+ sortperm(sm.rows_columns[range])
         sm.rows_columns[range] = sm.rows_columns[perm]
         sm.positions[range] = sm.positions[perm]
     end
