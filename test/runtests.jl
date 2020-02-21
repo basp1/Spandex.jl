@@ -16,3 +16,7 @@ end
 @testset "SparseMatrix" begin
     include("SparseMatrix.jl")
 end
+
+@testset "SparseArithmetic" begin
+    include("SparseArithmetic.jl")
+end
