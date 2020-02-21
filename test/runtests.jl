@@ -1,0 +1,18 @@
+using Test
+using Spandex
+
+@testset "Intlist" begin
+    include("Intlist.jl")
+end
+
+@testset "Graph" begin
+    include("Graph.jl")
+end
+
+@testset "SparseArray" begin
+    include("SparseArray.jl")
+end
+
+@testset "SparseMatrix" begin
+    include("SparseMatrix.jl")
+end

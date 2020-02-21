@@ -1,0 +1,7 @@
+name = "Spandex"
+uuid = "8d673e23-0bd5-44ef-b54c-c957c2c86252"
+authors = ["basp <akovn@yandex.ru>"]
+version = "0.1.0"
+
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

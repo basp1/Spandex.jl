@@ -1,0 +1,76 @@
+export Intlist
+export is_empty, top, next, contains, push!, pop!, pop_all!, clear!
+
+const NIL = -1
+const EMPTY = 0
+
+mutable struct Intlist
+    capacity::Int64
+    size::Int64
+
+    values::Vector{Int64}
+    ip::Int64
+
+    Intlist(capacity::Int64) = new(capacity, 0, fill(EMPTY, capacity), NIL)
+end
+
+function is_empty(il::Intlist)
+    return 0 == il.size
+end
+
+function top(il::Intlist)
+    return il.ip
+end
+
+function next(il::Intlist, key::Int64)
+    if NIL == key
+        return key
+    else
+        return il.values[key]
+    end
+end
+
+function contains(il::Intlist, key::Int64)
+    return key > 0 && key <= il.capacity && EMPTY != il.values[key]
+end
+
+function Base.:push!(il::Intlist, key::Int64)
+    @assert key > 0 && key <= il.capacity
+
+    if contains(il, key)
+        return
+    end
+
+    il.values[key] = il.ip
+    il.ip = key
+
+    il.size += 1
+end
+
+function Base.:pop!(il::Intlist)
+    @assert il.size > 0
+
+    local key = il.ip
+    il.ip = il.values[il.ip]
+    il.values[key] = EMPTY
+    il.size -= 1
+
+    return key
+end
+
+function pop_all!(il::Intlist)
+    local n = il.size
+    local values = zeros(Int64, n)
+
+    for i = 1:n
+        values[i] = pop!(il)
+    end
+
+    return values
+end
+
+function clear!(il::Intlist)
+    while il.size > 0
+        pop!(il)
+    end
+end
