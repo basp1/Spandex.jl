@@ -20,3 +20,7 @@ end
 @testset "SparseArithmetic" begin
     include("SparseArithmetic.jl")
 end
+
+@testset "SegmentTree" begin
+    include("SegmentTree.jl")
+end
