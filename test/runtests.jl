@@ -28,3 +28,7 @@ end
 @testset "PermuteTable" begin
     include("PermuteTable.jl")
 end
+
+@testset "CholeskySolver" begin
+    include("CholeskySolver.jl")
+end
