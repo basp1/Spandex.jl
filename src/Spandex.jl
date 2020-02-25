@@ -6,5 +6,7 @@ include("Graph.jl")
 include("SparseMatrix.jl")
 include("SparseArithmetic.jl")
 include("SegmentTree.jl")
+include("EliminationGraph.jl")
+include("PermuteTable.jl")
 
 end

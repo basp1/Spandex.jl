@@ -24,3 +24,7 @@ end
 @testset "SegmentTree" begin
     include("SegmentTree.jl")
 end
+
+@testset "PermuteTable" begin
+    include("PermuteTable.jl")
+end
