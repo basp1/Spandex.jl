@@ -96,11 +96,11 @@ function cholesky_to!(cs::CholeskySolver{T}, sym, ld::SparseMatrix{T}) where {T}
         end
 
         for k = ld.rows[j]:(ld.rows[j+1]-1)
-            if ld.row_columns[k] < j
+            if ld.rows_columns[k] >= j
                 break
             end
 
-            local r = ld.row_columns[k]
+            local r = ld.rows_columns[k]
             local a = ld.values[ld.positions[k]] * ld.values[ld.columns[r]]
 
             for i = ld.positions[k]:(ld.columns[r+1]-1)
