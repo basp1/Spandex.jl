@@ -1,6 +1,6 @@
 export EliminationGraph
 
-export eliminate!, is_leaf
+export eliminate!, is_leaf, getindex
 
 mutable struct EliminationGraph
     adj::Graph{Bool}
@@ -33,7 +33,7 @@ mutable struct EliminationGraph
 
             while !is_empty(eg.list)
                 local i = pop!(eg.list)
-                ``
+
                 connect!(eg.adj, true, i, j)
                 connect!(eg.adj, true, j, i)
 
@@ -89,4 +89,16 @@ end
 
 function is_leaf(eg::EliminationGraph, vertex::Int64)
     return is_leaf(eg.adj, vertex)
+end
+
+function getindex(eg::EliminationGraph, vertex::Int64)
+    local vertices = Vector{Int64}()
+    local i = eg.adj.start[vertex]
+
+    while NIL != i
+        push!(vertices, eg.adj.vertices[i])
+        i = eg.adj.next[i]
+    end
+
+    return vertices
 end
