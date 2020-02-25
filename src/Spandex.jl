@@ -9,5 +9,6 @@ include("SegmentTree.jl")
 include("EliminationGraph.jl")
 include("PermuteTable.jl")
 include("CholeskySolver.jl")
+include("Normalization.jl")
 
 end

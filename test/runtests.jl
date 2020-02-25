@@ -32,3 +32,7 @@ end
 @testset "CholeskySolver" begin
     include("CholeskySolver.jl")
 end
+
+@testset "Normalization" begin
+    include("Normalization.jl")
+end
