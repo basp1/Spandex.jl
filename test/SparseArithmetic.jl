@@ -140,6 +140,61 @@ end
     @test equals(e, c)
 end
 
+@testset "mul 4" begin
+    local g = Graph{Int64}(3)
+    g[1, 1] = 1
+    g[1, 3] = 3
+    g[2, 2] = 5
+    g[3, 2] = 8
+    local a = from_graph(g, 3, 3)
+
+    local x = [0, 3, 2]
+    local z = mul(a, x)
+    @test 3 == length(z)
+    @test 6 == z[1]
+    @test 15 == z[2]
+    @test 24 == z[3]
+
+    local y = SparseArray{Int64}(3)
+    y[2] = 3
+    y[3] = 2
+    z = mul(a, y)
+    @test 3 == z.size
+    @test 3 == z.nnz
+    @test 6 == z[1]
+    @test 15 == z[2]
+    @test 24 == z[3]
+end
+
+@testset "mul 5" begin
+    local g = Graph{Int64}(4)
+    g[1, 1] = 1
+    g[1, 3] = 3
+    g[2, 2] = 5
+    g[3, 2] = 8
+    g[4, 1] = 10
+    g[4, 2] = 11
+    g[4, 3] = 12
+    local a = from_graph(g, 4, 3)
+
+    local x = [0, 2, 0]
+    local z = mul(a, x)
+    @test 4 == length(z)
+    @test 0 == z[1]
+    @test 10 == z[2]
+    @test 16 == z[3]
+    @test 22 == z[4]
+
+    local y = SparseArray{Int64}(3)
+    y[2] = 2
+    z = mul(a, y)
+    @test 4 == z.size
+    @test 3 == z.nnz
+    @test 10 == z[2]
+    @test 16 == z[3]
+    @test 22 == z[4]
+end
+
 @testset "sqr 1" begin
     local g = Graph{Int64}(3)
     g[1, 2] = 1

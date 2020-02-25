@@ -115,6 +115,54 @@ function mul_to!(a, b, c::SparseMatrix{T}) where {T}
     end
 end
 
+function mul(a::SparseMatrix{T}, b::Vector{T}) where {T}
+    local c = zeros(T, a.row_count)
+    mul_to!(a, b, c)
+    return c
+end
+
+function mul_to!(a::SparseMatrix{T}, b, c::Vector{T}) where {T}
+    @assert a.column_count == length(b)
+    @assert a.row_count == length(c)
+
+    for i = 1:a.row_count
+        for j = a.rows[i]:(a.rows[i+1]-1)
+            c[i] += b[a.rows_columns[j]] * a.values[a.positions[j]]
+        end
+    end
+end
+
+function mul(a::SparseMatrix{T}, b::SparseArray{T}) where {T}
+    local c = SparseArray{T}(a.row_count)
+    mul_to!(a, b, c)
+    return c
+end
+
+function mul_to!(a::SparseMatrix{T}, b, c::SparseArray{T}) where {T}
+    @assert a.column_count == b.size
+    @assert a.row_count == c.size
+
+    local zero = T(0)
+    for i = 1:a.row_count
+        if a.rows[i+1] == a.rows[i]
+            continue
+        end
+
+        local x = zero
+
+        for j = a.rows[i]:(a.rows[i+1]-1)
+            local r = a.rows_columns[j]
+            if !ismissing(b[r])
+                x += b[r] * a.values[a.positions[j]]
+            end
+        end
+
+        if zero != x
+            c[i] = x
+        end
+    end
+end
+
 function sqr(a::SparseMatrix{T}) where {T}
     local s = sqr_sym(a)
     sqr_to!(a, s)
