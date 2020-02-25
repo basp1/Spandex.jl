@@ -1,7 +1,7 @@
 using Test
 using Spandex
 
-@testset "cholesky 1" begin
+@testset "cholesky_sym 1" begin
     local g = Graph{Int64}(3)
     g[1, 1] = 6
     g[2, 1] = 8
@@ -25,7 +25,7 @@ using Spandex
     @test contains(b, 3, 3)
 end
 
-@testset "cholesky 2" begin
+@testset "cholesky_sym 2" begin
     local g = Graph{Int64}(11)
     g[1, 1] = 1
     g[2, 2] = 2
@@ -70,7 +70,7 @@ end
     @test contains(b, 11, 9)
 end
 
-@testset "cholesky 3" begin
+@testset "cholesky_to! 1" begin
     local g = Graph{Float64}(3)
     g[1, 1] = 6.0
     g[2, 1] = 8.0
@@ -101,7 +101,7 @@ end
     @test equals(ld, e)
 end
 
-@testset "сholesky 4" begin
+@testset "cholesky_to! 2" begin
     local g = Graph{Float64}(5)
     g[1, 1] = 0.454154210872255
     g[2, 1] = 0.493313382040145
