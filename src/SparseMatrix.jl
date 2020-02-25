@@ -7,7 +7,7 @@ export equals, contains, diag, transpose
 export get_row,
     get_column, get_rowwise, set_rowwise!, get_columnwise, set_columnwise!
 
-@enum Layout default_layout lower_triangle upper_triangle lower_symmerric upper_symmerric
+@enum Layout default_layout lower_triangle upper_triangle lower_symmetric upper_symmetric
 
 mutable struct SparseMatrix{T}
     columns::Vector{Int64}
