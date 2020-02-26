@@ -90,32 +90,34 @@ function cholesky_to!(sym, ld::SparseMatrix{T}) where {T}
 
     local acc = zeros(T, n)
 
-    for j = 1:n
-        for i = sym.columns[j]:(sym.columns[j+1]-1)
-            acc[sym.columns_rows[i]] = sym.values[i]
-        end
-
-        for k = ld.rows[j]:(ld.rows[j+1]-1)
-            if ld.rows_columns[k] >= j
-                break
+    @inbounds begin
+        for j = 1:n
+            for i = sym.columns[j]:(sym.columns[j+1]-1)
+                acc[sym.columns_rows[i]] = sym.values[i]
             end
 
-            local r = ld.rows_columns[k]
-            local a = ld.values[ld.positions[k]] * ld.values[ld.columns[r]]
+            for k = ld.rows[j]:(ld.rows[j+1]-1)
+                if ld.rows_columns[k] >= j
+                    break
+                end
 
-            for i = ld.positions[k]:(ld.columns[r+1]-1)
-                acc[ld.columns_rows[i]] -= a * ld.values[i]
+                local r = ld.rows_columns[k]
+                local a = ld.values[ld.positions[k]] * ld.values[ld.columns[r]]
+
+                for i = ld.positions[k]:(ld.columns[r+1]-1)
+                    acc[ld.columns_rows[i]] -= a * ld.values[i]
+                end
             end
-        end
 
-        local d = ld.values[ld.columns[j]] = acc[j]
-        if d <= zero
-            d = tolerance
-        end
+            local d = ld.values[ld.columns[j]] = acc[j]
+            if d <= zero
+                d = tolerance
+            end
 
-        for k = ld.columns[j]+1:(ld.columns[j+1]-1)
-            ld.values[k] = acc[ld.columns_rows[k]] / d
-            acc[ld.columns_rows[k]] = T(0)
+            for k = ld.columns[j]+1:(ld.columns[j+1]-1)
+                ld.values[k] = acc[ld.columns_rows[k]] / d
+                acc[ld.columns_rows[k]] = T(0)
+            end
         end
     end
 end
@@ -140,14 +142,16 @@ function solve_lower(ld::SparseMatrix{T}, b::Vector{T}) where {T}
     local n = ld.row_count
     local y = zeros(T, n)
 
-    for i = 1:n
-        local sum = T(0)
+    @inbounds begin
+        for i = 1:n
+            local sum = T(0)
 
-        for j = ld.rows[i]:(ld.rows[i+1]-2)
-            sum += ld.values[ld.positions[j]] * y[ld.rows_columns[j]]
+            for j = ld.rows[i]:(ld.rows[i+1]-2)
+                sum += ld.values[ld.positions[j]] * y[ld.rows_columns[j]]
+            end
+
+            y[i] = b[i] - sum
         end
-
-        y[i] = b[i] - sum
     end
 
     return y
@@ -160,8 +164,10 @@ function solve_diag(ld::SparseMatrix{T}, y::Vector{T}) where {T}
     local n = ld.row_count
     local x = zeros(T, n)
 
-    for j = n:-1:1
-        x[j] = y[j] / ld.values[ld.columns[j]]
+    @inbounds begin
+        for j = n:-1:1
+            x[j] = y[j] / ld.values[ld.columns[j]]
+        end
     end
 
     return x
@@ -174,14 +180,16 @@ function solve_upper(ld::SparseMatrix{T}, z::Vector{T}) where {T}
     local n = ld.row_count
     local x = zeros(T, n)
 
-    for j = n:-1:1
-        local sum = T(0)
+    @inbounds begin
+        for j = n:-1:1
+            local sum = T(0)
 
-        for i = (ld.columns[j]+1):(ld.columns[j+1]-1)
-            sum += ld.values[i] * x[ld.columns_rows[i]]
+            for i = (ld.columns[j]+1):(ld.columns[j+1]-1)
+                sum += ld.values[i] * x[ld.columns_rows[i]]
+            end
+
+            x[j] = z[j] - sum
         end
-
-        x[j] = z[j] - sum
     end
 
     return x
