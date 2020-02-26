@@ -212,7 +212,7 @@ end
 function diag(sm::SparseMatrix{T}) where {T}
     @assert sm.column_count == sm.row_count
 
-    local values = Vector{T}
+    local values = Vector{T}()
     for i = 1:sm.row_count
         push!(values, get_columnwise(sm, i, i))
     end
