@@ -29,7 +29,7 @@ mutable struct CholeskySolver{T}
     end
 end
 
-function cholesky_sym(cs::CholeskySolver{T}, sym::SparseMatrix{T}) where {T}
+function cholesky_sym(sym::SparseMatrix{T}) where {T}
     @assert lower_symmetric == sym.layout
 
     local n = sym.row_count
@@ -37,12 +37,12 @@ function cholesky_sym(cs::CholeskySolver{T}, sym::SparseMatrix{T}) where {T}
     local g = Graph{T}(n)
 
     local columns = Vector{Int64}()
-    clear!(cs.list)
+    clear!(sym.list)
 
     for i = 1:n
         for j = sym.rows[i]:(sym.rows[i+1]-1)
             local jj = sym.rows_columns[j]
-            push!(cs.list, jj)
+            push!(sym.list, jj)
             push!(columns, jj)
         end
 
@@ -62,15 +62,15 @@ function cholesky_sym(cs::CholeskySolver{T}, sym::SparseMatrix{T}) where {T}
                     continue
                 end
 
-                if !contains(cs.list, r)
-                    push!(cs.list, r)
+                if !contains(sym.list, r)
+                    push!(sym.list, r)
                     push!(columns, r)
                 end
             end
         end
 
-        while !is_empty(cs.list)
-            connect!(g, T(0), pop!(cs.list), i)
+        while !is_empty(sym.list)
+            connect!(g, T(0), pop!(sym.list), i)
         end
     end
 
@@ -81,7 +81,7 @@ function cholesky_sym(cs::CholeskySolver{T}, sym::SparseMatrix{T}) where {T}
     return ct
 end
 
-function cholesky_to!(cs::CholeskySolver{T}, sym, ld::SparseMatrix{T}) where {T}
+function cholesky_to!(sym, ld::SparseMatrix{T}) where {T}
     @assert lower_symmetric == sym.layout
     @assert lower_triangle == ld.layout
 
@@ -120,12 +120,7 @@ function cholesky_to!(cs::CholeskySolver{T}, sym, ld::SparseMatrix{T}) where {T}
     end
 end
 
-function solve_to!(
-    cs::CholeskySolver{T},
-    ld::SparseMatrix{T},
-    b,
-    result::Vector{T},
-) where {T}
+function solve_to!(ld::SparseMatrix{T}, b, result::Vector{T}) where {T}
     @assert lower_triangle == ld.layout
     @assert length(b) == ld.row_count
 

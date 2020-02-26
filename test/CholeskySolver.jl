@@ -12,8 +12,7 @@ using Spandex
     local ata = from_graph(g, 3, 3)
     ata.layout = Spandex.lower_symmetric
 
-    local solver = CholeskySolver{Int64}(3, 3)
-    local b = cholesky_sym(solver, ata)
+    local b = cholesky_sym(ata)
 
     @test 6 == b.nnz
 
@@ -57,8 +56,7 @@ end
     local ata = from_graph(g, 11, 11)
     ata.layout = Spandex.lower_symmetric
 
-    local solver = CholeskySolver{Int64}(11, 11)
-    local b = cholesky_sym(solver, ata)
+    local b = cholesky_sym(ata)
 
     @test 33 == b.nnz
 
@@ -91,9 +89,8 @@ end
     local e = from_graph(g, 3, 3)
     e.layout = Spandex.lower_symmetric
 
-    local solver = CholeskySolver{Float64}(5, 5)
-    local ld = cholesky_sym(solver, ata)
-    cholesky_to!(solver, ata, ld)
+    local ld = cholesky_sym(ata)
+    cholesky_to!(ata, ld)
 
     ld.values = round.(ld.values, digits = 8)
     e.values = round.(e.values, digits = 8)
@@ -140,9 +137,8 @@ end
     local e = from_graph(g, 5, 5)
     e.layout = Spandex.lower_symmetric
 
-    local solver = CholeskySolver{Float64}(5, 5)
-    local ld = cholesky_sym(solver, ata)
-    cholesky_to!(solver, ata, ld)
+    local ld = cholesky_sym(ata)
+    cholesky_to!(ata, ld)
 
     ld.values = round.(ld.values, digits = 8)
     e.values = round.(e.values, digits = 8)
@@ -161,14 +157,12 @@ end
     local ata = from_graph(g, 3, 3)
     ata.layout = Spandex.lower_symmetric
 
-    local solver = CholeskySolver{Float64}(3, 3)
-
     local b = [1.0, 10.0, 5.0]
 
-    local ld = cholesky_sym(solver, ata)
-    cholesky_to!(solver, ata, ld)
+    local ld = cholesky_sym(ata)
+    cholesky_to!(ata, ld)
     local x = zeros(Float64, 3)
-    solve_to!(solver, ld, b, x)
+    solve_to!(ld, b, x)
 
     @test 3 == length(x)
 
@@ -197,14 +191,12 @@ end
     local ata = from_graph(g, 5, 5)
     ata.layout = Spandex.lower_symmetric
 
-    local solver = CholeskySolver{Float64}(5, 5)
-
     local b = [4.0, -1.0, -3.0, 4.0, -2.0]
 
-    local ld = cholesky_sym(solver, ata)
-    cholesky_to!(solver, ata, ld)
+    local ld = cholesky_sym(ata)
+    cholesky_to!(ata, ld)
     local x = zeros(Float64, 5)
-    solve_to!(solver, ld, b, x)
+    solve_to!(ld, b, x)
 
     @test 5 == length(x)
 
