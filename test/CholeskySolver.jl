@@ -312,3 +312,87 @@ end
     @test abs(21.5250 - x[2]) < 1e-8
     @test abs(-4.5250 - x[3]) < 1e-8
 end
+
+@testset "solve 3" begin
+    local g = Graph{Float64}(10)
+    g[1, 1] = 0.360464443870286
+    g[3, 2] = 0.965038079655014
+    g[10, 2] = 0.806541221607173
+    g[1, 3] = 0.156202523064209
+    g[3, 3] = 0.70277194218269
+    g[7, 3] = 0.398688926587124
+    g[9, 3] = 0.158532504726658
+    g[10, 3] = 0.070915819808533
+    g[7, 4] = 0.552895404215196
+    g[4, 5] = 0.97656582830328
+    g[6, 5] = 0.362469500523493
+    g[2, 6] = 0.510437505153131
+    g[3, 6] = 0.473695871041683
+    g[5, 7] = 0.477123911915246
+    g[8, 7] = 0.582754540178946
+    g[4, 8] = 0.828533162691592
+    g[5, 9] = 0.612247361949774
+    g[6, 10] = 0.570109021624869
+    local a = from_graph(g, 10, 10)
+
+    local solver = CholeskySolver{Float64}(10, 10)
+    solver.use_permutation = false
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = collect(1.0:10.0)
+
+    local x = solve(solver, a, b)
+
+    local y = mul(a, x)
+
+    solver.use_normalization = true
+
+    x = solve(solver, a, b)
+    local z = mul(a, x)
+
+    @test sum((y .- z) .^ 2) < 1e-8
+end
+
+@testset "solve 4" begin
+    local g = Graph{Float64}(10)
+    g[1, 1] = 0.360464443870286
+    g[3, 2] = 0.965038079655014
+    g[10, 2] = 0.806541221607173
+    g[1, 3] = 0.156202523064209
+    g[3, 3] = 0.70277194218269
+    g[7, 3] = 0.398688926587124
+    g[9, 3] = 0.158532504726658
+    g[10, 3] = 0.070915819808533
+    g[7, 4] = 0.552895404215196
+    g[4, 5] = 0.97656582830328
+    g[6, 5] = 0.362469500523493
+    g[2, 6] = 0.510437505153131
+    g[3, 6] = 0.473695871041683
+    g[5, 7] = 0.477123911915246
+    g[8, 7] = 0.582754540178946
+    g[4, 8] = 0.828533162691592
+    g[5, 9] = 0.612247361949774
+    g[6, 10] = 0.570109021624869
+    local a = from_graph(g, 10, 10)
+
+    local solver = CholeskySolver{Float64}(10, 10)
+    solver.use_permutation = true
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = collect(1.0:10.0)
+
+    local x = solve(solver, a, b)
+
+    local y = mul(a, x)
+
+    solver.use_normalization = true
+
+    x = solve(solver, a, b)
+    local z = mul(a, x)
+
+    @test sum((y .- z) .^ 2) < 1e-8
+end
