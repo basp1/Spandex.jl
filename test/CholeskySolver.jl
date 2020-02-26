@@ -588,7 +588,6 @@ end
     @test sum((x .- d) .^ 2) < 1e-8
 end
 
-
 @testset "downdate 2" begin
     local g = Graph{Float64}(10)
     g[1, 1] = 0.360464443870286
@@ -716,4 +715,37 @@ end
     u = downdate!(solver, m, 11.0)
 
     @test sum((x .- u) .^ 2) < 1e-8
+end
+
+@testset "example 1" begin
+    local n = 3
+    local a = from_csr(
+        n,
+        n,
+        [1, 3, 6, 8],
+        [2, 3, 1, 2, 3, 2, 3],
+        [1.0, 1.0, 2.0, 4.0, -2.0, 3.0, 15.0],
+    )
+
+    local solver = CholeskySolver{Float64}(n, n)
+    # # by default
+    # solver.use_permutation = true
+    # solver.use_normalization = true
+
+    solve_sym(solver, a)
+
+    local b = [17.0, 2.89, -3.3]
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(n)
+    m[1] = 7.0
+    m[2] = -5.0
+    m[3] = 1.0
+
+    local u = update!(solver, m, 9.0)
+    local v = downdate!(solver, m, 9.0)
+
+    @assert sum(abs.(x - u)) > 0
+    @assert sum(abs.(x - v)) < 1e-8
 end
