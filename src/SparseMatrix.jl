@@ -18,7 +18,6 @@ mutable struct SparseMatrix{T}
     rows_columns::Vector{Int64}
     positions::Vector{Int64}
 
-
     layout::Layout
     nnz::Int64
     row_count::Int64
