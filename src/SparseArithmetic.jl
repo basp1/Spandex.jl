@@ -219,3 +219,67 @@ function sqr_to!(a, ata::SparseMatrix{T}) where {T}
         end
     end
 end
+
+function sqr_sym(a::SparseMatrix{T}, pt::PermuteTable) where {T}
+    @assert default_layout == a.layout
+
+    local g = Graph{T}(a.column_count)
+    clear!(a.list)
+
+    for j = 1:a.column_count
+        local jj = pt.permuted[j]
+
+        for i = a.columns[jj]:(a.columns[jj+1]-1)
+            local ii = a.columns_rows[i]
+            for k = a.rows[ii]:(a.rows[ii+1]-1)
+                local r = pt.primary[a.rows_columns[k]]
+
+                if r < j
+                    continue
+                end
+
+                push!(a.list, r)
+            end
+        end
+
+        push!(a.list, j)
+
+        while !is_empty(a.list)
+            connect!(g, T(0), pop!(a.list), j)
+        end
+    end
+
+    local ata = from_graph(g, a.column_count, a.column_count)
+    ata.layout = lower_symmetric
+
+    return ata
+end
+
+function sqr_to!(a, ata::SparseMatrix{T}, pt::PermuteTable) where {T}
+    @assert default_layout == a.layout
+    @assert lower_symmetric == ata.layout
+
+    @inbounds begin
+        local acc = zeros(T, a.column_count)
+
+        for j = 1:a.column_count
+            local jj = pt.permuted[j]
+
+            for i = a.columns[jj]:(a.columns[jj+1]-1)
+                local ii = a.columns_rows[i]
+
+                for k = a.rows[ii]:(a.rows[ii+1]-1)
+                    local r = pt.primary[a.rows_columns[k]]
+
+                    acc[r] += a.values[i] * a.values[a.positions[k]]
+                end
+            end
+
+            for i = ata.columns[j]:(ata.columns[j+1]-1)
+                local r = ata.columns_rows[i]
+                ata.values[i] = acc[r]
+                acc[r] = T(0)
+            end
+        end
+    end
+end
