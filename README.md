@@ -1,4 +1,4 @@
-# spandex
+# Spandex
 Fast and simple sparse matrix library
 
 ```julia
