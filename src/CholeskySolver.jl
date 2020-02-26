@@ -1,5 +1,5 @@
 export CholeskySolver
-export cholesky_sym, cholesky_to!
+export cholesky_sym, cholesky_to!, solve_to!
 
 mutable struct CholeskySolver{T}
     list::Intlist
@@ -118,4 +118,76 @@ function cholesky_to!(cs::CholeskySolver{T}, sym, ld::SparseMatrix{T}) where {T}
             acc[ld.columns_rows[k]] = T(0)
         end
     end
+end
+
+function solve_to!(
+    cs::CholeskySolver{T},
+    ld::SparseMatrix{T},
+    b,
+    result::Vector{T},
+) where {T}
+    @assert lower_triangle == ld.layout
+    @assert length(b) == ld.row_count
+
+    local y = solve_lower(ld, b)
+
+    local z = solve_diag(ld, y)
+
+    local x = solve_upper(ld, z)
+
+    result[:] = x[:]
+end
+
+function solve_lower(ld::SparseMatrix{T}, b::Vector{T}) where {T}
+    @assert lower_triangle == ld.layout
+    @assert length(b) == ld.row_count
+
+    local n = ld.row_count
+    local y = zeros(T, n)
+
+    for i = 1:n
+        local sum = T(0)
+
+        for j = ld.rows[i]:(ld.rows[i+1]-2)
+            sum += ld.values[ld.positions[j]] * y[ld.rows_columns[j]]
+        end
+
+        y[i] = b[i] - sum
+    end
+
+    return y
+end
+
+function solve_diag(ld::SparseMatrix{T}, y::Vector{T}) where {T}
+    @assert lower_triangle == ld.layout
+    @assert length(y) == ld.row_count
+
+    local n = ld.row_count
+    local x = zeros(T, n)
+
+    for j = n:-1:1
+        x[j] = y[j] / ld.values[ld.columns[j]]
+    end
+
+    return x
+end
+
+function solve_upper(ld::SparseMatrix{T}, z::Vector{T}) where {T}
+    @assert lower_triangle == ld.layout
+    @assert length(z) == ld.row_count
+
+    local n = ld.row_count
+    local x = zeros(T, n)
+
+    for j = n:-1:1
+        local sum = T(0)
+
+        for i = (ld.columns[j]+1):(ld.columns[j+1]-1)
+            sum += ld.values[i] * x[ld.columns_rows[i]]
+        end
+
+        x[j] = z[j] - sum
+    end
+
+    return x
 end

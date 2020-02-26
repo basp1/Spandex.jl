@@ -149,3 +149,68 @@ end
 
     @test equals(ld, e)
 end
+
+@testset "solve_to! 1" begin
+    local g = Graph{Float64}(3)
+    g[1, 1] = 38.0
+    g[2, 1] = 22.0
+    g[2, 2] = 17.0
+    g[3, 1] = 14.0
+    g[3, 2] = 13.0
+    g[3, 3] = 11.0
+    local ata = from_graph(g, 3, 3)
+    ata.layout = Spandex.lower_symmetric
+
+    local solver = CholeskySolver{Float64}(3, 3)
+
+    local b = [1.0, 10.0, 5.0]
+
+    local ld = cholesky_sym(solver, ata)
+    cholesky_to!(solver, ata, ld)
+    local x = zeros(Float64, 3)
+    solve_to!(solver, ld, b, x)
+
+    @test 3 == length(x)
+
+    @test abs(-9.5 - x[1]) < 1e-10
+    @test abs(34.166666666666 - x[2]) < 1e-10
+    @test abs(-27.833333333333 - x[3]) < 1e-10
+end
+
+@testset "solve_to! 2" begin
+    local g = Graph{Float64}(5)
+    g[1, 1] = 0.339721892599889
+    g[2, 1] = -0.117511897064494
+    g[2, 2] = 0.61348986691309
+    g[3, 1] = 0.0221940137659884
+    g[3, 2] = 0.27504299861335
+    g[3, 3] = 0.355516636030647
+    g[4, 1] = -0.26882517335515
+    g[4, 2] = 0.0684899239330446
+    g[4, 3] = 0.0333434870019433
+    g[4, 4] = 0.412101013254036
+    g[5, 1] = -0.159648639043336
+    g[5, 2] = 0.0401190234458681
+    g[5, 3] = -0.0318276646882203
+    g[5, 4] = -0.0108046250911296
+    g[5, 5] = 0.399329937547505
+    local ata = from_graph(g, 5, 5)
+    ata.layout = Spandex.lower_symmetric
+
+    local solver = CholeskySolver{Float64}(5, 5)
+
+    local b = [4.0, -1.0, -3.0, 4.0, -2.0]
+
+    local ld = cholesky_sym(solver, ata)
+    cholesky_to!(solver, ata, ld)
+    local x = zeros(Float64, 5)
+    solve_to!(solver, ld, b, x)
+
+    @test 5 == length(x)
+
+    @test abs(84.3926371078906 - x[1]) < 1e-10
+    @test abs(20.6069097491701 - x[2]) < 1e-10
+    @test abs(-33.4133473479173 - x[3]) < 1e-10
+    @test abs(64.7118533875248 - x[4]) < 1e-10
+    @test abs(25.7485304673898 - x[5]) < 1e-10
+end
