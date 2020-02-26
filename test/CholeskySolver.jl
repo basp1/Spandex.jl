@@ -396,3 +396,324 @@ end
 
     @test sum((y .- z) .^ 2) < 1e-8
 end
+
+@testset "update 1" begin
+    local g = Graph{Float64}(3)
+    g[1, 2] = 1.0
+    g[1, 3] = 1.0
+    g[2, 1] = 2.0
+    g[2, 2] = 4.0
+    g[2, 3] = -2.0
+    g[3, 2] = 3.0
+    g[3, 3] = 15.0
+    local a = from_graph(g, 3, 3)
+
+    local solver = CholeskySolver{Float64}(3, 3)
+    solver.use_permutation = false
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = [17.0, 2.89, -3.3]
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(3)
+    m[1] = 7.0
+    m[2] = -5.0
+    m[3] = 1.0
+    local u = update!(solver, m, 9.0)
+
+    add_vertex!(g)
+    g[4, 1] = m[1]
+    g[4, 2] = m[2]
+    g[4, 3] = m[3]
+    a = from_graph(g, 4, 3)
+    push!(b, 9.0)
+    x = solve(solver, a, b)
+
+    @test sum((x .- u) .^ 2) < 1e-8
+end
+
+@testset "update 2" begin
+    local g = Graph{Float64}(3)
+    g[1, 2] = 1.0
+    g[1, 3] = 1.0
+    g[2, 1] = 2.0
+    g[2, 2] = 4.0
+    g[2, 3] = -2.0
+    g[3, 2] = 3.0
+    g[3, 3] = 15.0
+    local a = from_graph(g, 3, 3)
+
+    local solver = CholeskySolver{Float64}(3, 3)
+    solver.use_permutation = true
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = [17.0, 2.89, -3.3]
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(3)
+    m[1] = 7.0
+    m[2] = -5.0
+    m[3] = 1.0
+    local u = update!(solver, m, 9.0)
+
+    add_vertex!(g)
+    g[4, 1] = m[1]
+    g[4, 2] = m[2]
+    g[4, 3] = m[3]
+    a = from_graph(g, 4, 3)
+    push!(b, 9.0)
+    x = solve(solver, a, b)
+
+    @test sum((x .- u) .^ 2) < 1e-8
+end
+
+@testset "update 3" begin
+    local g = Graph{Float64}(3)
+    g[1, 2] = 1.0
+    g[1, 3] = 1.0
+    g[2, 1] = 2.0
+    g[2, 2] = 4.0
+    g[2, 3] = -2.0
+    g[3, 2] = 3.0
+    g[3, 3] = 15.0
+    local a = from_graph(g, 3, 3)
+
+    local solver = CholeskySolver{Float64}(3, 3)
+    solver.use_permutation = false
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = [17.0, 2.89, -3.3]
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(3)
+    m[3] = 1.0
+    local u = update!(solver, m, 9.0)
+
+    add_vertex!(g)
+    g[4, 3] = 1.0
+    a = from_graph(g, 4, 3)
+    push!(b, 9.0)
+    x = solve(solver, a, b)
+
+    @test sum((x .- u) .^ 2) < 1e-8
+end
+
+@testset "update 4" begin
+    local g = Graph{Float64}(10)
+    g[1, 1] = 0.360464443870286
+    g[3, 2] = 0.965038079655014
+    g[10, 2] = 0.806541221607173
+    g[1, 3] = 0.156202523064209
+    g[3, 3] = 0.70277194218269
+    g[7, 3] = 0.398688926587124
+    g[9, 3] = 0.158532504726658
+    g[10, 3] = 0.070915819808533
+    g[7, 4] = 0.552895404215196
+    g[4, 5] = 0.97656582830328
+    g[6, 5] = 0.362469500523493
+    g[2, 6] = 0.510437505153131
+    g[3, 6] = 0.473695871041683
+    g[5, 7] = 0.477123911915246
+    g[8, 7] = 0.582754540178946
+    g[4, 8] = 0.828533162691592
+    g[5, 9] = 0.612247361949774
+    g[6, 10] = 0.570109021624869
+    local a = from_graph(g, 10, 10)
+
+    local solver = CholeskySolver{Float64}(10, 10)
+    solver.use_permutation = true
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = collect(1.0:10.0)
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(10)
+    m[2] = 0.5
+    m[3] = 0.1
+    m[6] = 0.9
+    local u = update!(solver, m, 11.0)
+
+    add_vertex!(g)
+    g[11, 2] = m[2]
+    g[11, 3] = m[3]
+    g[11, 6] = m[6]
+    a = from_graph(g, 11, 10)
+    push!(b, 11.0)
+    x = solve(solver, a, b)
+
+    @test sum((x .- u) .^ 2) < 1e-8
+end
+
+@testset "downdate 1" begin
+    local g = Graph{Float64}(3)
+    g[1, 2] = 1.0
+    g[1, 3] = 1.0
+    g[2, 1] = 2.0
+    g[2, 2] = 4.0
+    g[2, 3] = -2.0
+    g[3, 2] = 3.0
+    g[3, 3] = 15.0
+    local a = from_graph(g, 3, 3)
+
+    local solver = CholeskySolver{Float64}(3, 3)
+    solver.use_permutation = false
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = [17.0, 2.89, -3.3]
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(3)
+    m[1] = 3.0
+    m[2] = 2.0
+    m[3] = 1.0
+    local u = update!(solver, m, 9.0)
+
+    local d = downdate!(solver, m, 9.0)
+
+    @test sum((x .- d) .^ 2) < 1e-8
+end
+
+
+@testset "downdate 2" begin
+    local g = Graph{Float64}(10)
+    g[1, 1] = 0.360464443870286
+    g[3, 2] = 0.965038079655014
+    g[10, 2] = 0.806541221607173
+    g[1, 3] = 0.156202523064209
+    g[3, 3] = 0.70277194218269
+    g[7, 3] = 0.398688926587124
+    g[9, 3] = 0.158532504726658
+    g[10, 3] = 0.070915819808533
+    g[7, 4] = 0.552895404215196
+    g[4, 5] = 0.97656582830328
+    g[6, 5] = 0.362469500523493
+    g[2, 6] = 0.510437505153131
+    g[3, 6] = 0.473695871041683
+    g[5, 7] = 0.477123911915246
+    g[8, 7] = 0.582754540178946
+    g[4, 8] = 0.828533162691592
+    g[5, 9] = 0.612247361949774
+    g[6, 10] = 0.570109021624869
+    local a = from_graph(g, 10, 10)
+
+    local solver = CholeskySolver{Float64}(10, 10)
+    solver.use_permutation = true
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = collect(1.0:10.0)
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(10)
+    m[2] = 0.5
+    m[3] = 0.1
+    m[6] = 0.9
+    local u = update!(solver, m, 11.0)
+
+    @test sum((x .- u) .^ 2) > 0
+
+    u = downdate!(solver, m, 11.0)
+
+    @test sum((x .- u) .^ 2) < 1e-8
+end
+
+@testset "downdate 3" begin
+    local g = Graph{Float64}(10)
+    g[1, 1] = 0.360464443870286
+    g[3, 2] = 0.965038079655014
+    g[10, 2] = 0.806541221607173
+    g[1, 3] = 0.156202523064209
+    g[3, 3] = 0.70277194218269
+    g[7, 3] = 0.398688926587124
+    g[9, 3] = 0.158532504726658
+    g[10, 3] = 0.070915819808533
+    g[7, 4] = 0.552895404215196
+    g[4, 5] = 0.97656582830328
+    g[6, 5] = 0.362469500523493
+    g[2, 6] = 0.510437505153131
+    g[3, 6] = 0.473695871041683
+    g[5, 7] = 0.477123911915246
+    g[8, 7] = 0.582754540178946
+    g[4, 8] = 0.828533162691592
+    g[5, 9] = 0.612247361949774
+    g[6, 10] = 0.570109021624869
+    local a = from_graph(g, 10, 10)
+
+    local solver = CholeskySolver{Float64}(10, 10)
+    solver.use_permutation = false
+    solver.use_normalization = true
+
+    solve_sym(solver, a)
+
+    local b = collect(1.0:10.0)
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(10)
+    m[2] = 0.5
+    m[3] = 0.1
+    m[6] = 0.9
+    local u = update!(solver, m, 11.0)
+    u = downdate!(solver, m, 11.0)
+
+    @test sum((x .- u) .^ 2) < 1e-8
+end
+
+@testset "downdate 4" begin
+    local g = Graph{Float64}(10)
+    g[1, 1] = 0.360464443870286
+    g[3, 2] = 0.965038079655014
+    g[10, 2] = 0.806541221607173
+    g[1, 3] = 0.156202523064209
+    g[3, 3] = 0.70277194218269
+    g[7, 3] = 0.398688926587124
+    g[9, 3] = 0.158532504726658
+    g[10, 3] = 0.070915819808533
+    g[7, 4] = 0.552895404215196
+    g[4, 5] = 0.97656582830328
+    g[6, 5] = 0.362469500523493
+    g[2, 6] = 0.510437505153131
+    g[3, 6] = 0.473695871041683
+    g[5, 7] = 0.477123911915246
+    g[8, 7] = 0.582754540178946
+    g[4, 8] = 0.828533162691592
+    g[5, 9] = 0.612247361949774
+    g[6, 10] = 0.570109021624869
+    local a = from_graph(g, 10, 10)
+
+    local solver = CholeskySolver{Float64}(10, 10)
+    solver.use_permutation = true
+    solver.use_normalization = true
+
+    solve_sym(solver, a)
+
+    local b = collect(1.0:10.0)
+
+    local x = solve(solver, a, b)
+
+    local m = SparseArray{Float64}(10)
+    m[2] = 0.5
+    m[3] = 0.1
+    m[6] = 0.9
+    local u = update!(solver, m, 11.0)
+    u = downdate!(solver, m, 11.0)
+
+    @test sum((x .- u) .^ 2) < 1e-8
+end

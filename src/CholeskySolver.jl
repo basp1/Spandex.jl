@@ -1,5 +1,6 @@
 export CholeskySolver
-export cholesky_sym, cholesky_to!, solve_sym, solve, solve_to!
+export cholesky_sym,
+    cholesky_to!, solve_sym, solve, solve_to!, update!, downdate!
 
 mutable struct CholeskySolver{T}
     list::Intlist
@@ -237,6 +238,8 @@ function solve(
 
     if cs.use_normalization
         cs.norm = norm!(cs.ata)
+    else
+        cs.norm = ones(T, cs.ata.column_count)
     end
 
     cholesky_to!(cs.ata, cs.ld)
@@ -256,6 +259,161 @@ function solve(
     end
 
     x[:] = x[cs.perm.primary]
+
+    return x
+end
+
+function update!(
+    ld::SparseMatrix{T},
+    u::SparseArray{T},
+    pt::PermuteTable,
+) where {T}
+    @assert lower_triangle == ld.layout
+    @assert ld.row_count == u.size
+
+    local zero = T(0)
+    local a = T(1)
+    local b = zero
+    local c = zero
+
+    local vals = zeros(T, u.size)
+    for i = 1:u.nnz
+        vals[pt.primary[u.indices[i]]] = u.values[i]
+    end
+
+    for j = 1:u.size
+        if zero == vals[j]
+            continue
+        end
+
+        local jj = ld.columns[j]
+
+        local diag = ld.values[jj]
+        local x = vals[j]
+        b = a + x * x / diag
+        ld.values[jj] = diag * b / a
+        c = x / (diag * b)
+        a = b
+
+        for i = (jj+1):(ld.columns[j+1]-1)
+            local ii = ld.columns_rows[i]
+
+            vals[ii] -= x * ld.values[i]
+            ld.values[i] += c * vals[ii]
+        end
+    end
+end
+
+function downdate!(
+    ld::SparseMatrix{T},
+    u::SparseArray{T},
+    tolerance::T,
+    pt::PermuteTable,
+) where {T}
+    @assert lower_triangle == ld.layout
+    @assert ld.row_count == u.size
+
+    local zero = T(0)
+    local one = T(1)
+
+    local vals = zeros(T, u.size)
+    for i = 1:u.nnz
+        vals[pt.primary[u.indices[i]]] = u.values[i]
+    end
+
+    local d = diag(ld)
+    for i = 1:u.size
+        set_columnwise!(ld, i, i, one)
+    end
+
+    local p = solve_lower(ld, vals)
+
+    for i = 1:u.size
+        set_columnwise!(ld, i, i, d[i])
+    end
+
+    local sum = zero
+    for i = 1:u.size
+        sum += p[i] / get_columnwise(ld, i, i) * p[i]
+    end
+
+    local a = one - sum
+
+    if a <= tolerance
+        a = tolerance
+    end
+
+    for j = u.size:-1:1
+        local jj = ld.columns[j]
+        local d = ld.values[jj]
+
+        local b = a + p[j] * p[j] / d
+        ld.values[jj] = d * a / b
+        local c = -p[j] / (d * a)
+        vals[j] = p[j]
+
+        a = b
+
+        for i = (jj+1):(ld.columns[j+1]-1)
+            local ii = ld.columns_rows[i]
+
+            local v = vals[ii]
+            vals[ii] += p[j] * ld.values[i]
+            ld.values[i] += c * v
+        end
+    end
+end
+
+function update!(cs::CholeskySolver{T}, u::SparseArray{T}, v::T) where {T}
+    @assert cs.ld.row_count == u.size
+
+    local zero = T(0)
+    for i = 1:u.nnz
+        if zero != u.values[i]
+            local ii = cs.perm.primary[u.indices[i]]
+            cs.y[ii] += v * u.values[i] * cs.norm[ii]
+        end
+    end
+
+    update!(cs.ld, u, cs.perm)
+
+    local x = zeros(T, cs.ld.row_count)
+    solve_to!(cs.ld, cs.y, x)
+
+    if cs.use_normalization
+        x .*= cs.norm
+    end
+
+    if cs.use_permutation
+        x[:] = x[cs.perm.primary]
+    end
+
+    return x
+end
+
+function downdate!(cs::CholeskySolver{T}, u::SparseArray{T}, v::T) where {T}
+    @assert cs.ld.row_count == u.size
+
+    local zero = T(0)
+    for i = 1:u.nnz
+        if zero != u.values[i]
+            local ii = cs.perm.primary[u.indices[i]]
+            cs.y[ii] -= v * u.values[i] * cs.norm[ii]
+        end
+    end
+
+    downdate!(cs.ld, u, cs.tolerance, cs.perm)
+
+    local x = zeros(T, cs.ld.row_count)
+    solve_to!(cs.ld, cs.y, x)
+
+    if cs.use_normalization
+        x .*= cs.norm
+    end
+
+    if cs.use_permutation
+        x[:] = x[cs.perm.primary]
+    end
 
     return x
 end
