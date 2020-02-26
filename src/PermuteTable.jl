@@ -8,6 +8,16 @@ mutable struct PermuteTable
     primary::Vector{Int64}
     permuted::Vector{Int64}
 
+    function PermuteTable(n::Int64)
+        local pt = new()
+
+        pt.size = n
+        pt.primary = collect(1:n)
+        pt.permuted = collect(1:n)
+
+        return pt
+    end
+
     function PermuteTable(a::SparseMatrix)
         local n = a.column_count
 

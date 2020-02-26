@@ -1,5 +1,5 @@
 export CholeskySolver
-export cholesky_sym, cholesky_to!, solve_to!
+export cholesky_sym, cholesky_to!, solve_sym, solve, solve_to!
 
 mutable struct CholeskySolver{T}
     list::Intlist
@@ -9,11 +9,14 @@ mutable struct CholeskySolver{T}
     y::Vector{T}
 
     perm::PermuteTable
+    norm::Vector{T}
 
     row_count::Int64
     column_count::Int64
 
     tolerance::Float64
+    use_permutation::Bool
+    use_normalization::Bool
 
     function CholeskySolver{T}(row_count, column_count::Int64) where {T}
         local cs = new()
@@ -24,6 +27,9 @@ mutable struct CholeskySolver{T}
         cs.list = Intlist(column_count)
 
         cs.tolerance = 1e-10
+
+        cs.use_permutation = true
+        cs.use_normalization = true
 
         return cs
     end
@@ -191,6 +197,63 @@ function solve_upper(ld::SparseMatrix{T}, z::Vector{T}) where {T}
             x[j] = z[j] - sum
         end
     end
+
+    return x
+end
+
+function mul_transposed_to!(a::SparseMatrix{T}, b, c::Vector{T}) where {T}
+    @assert a.row_count == length(b)
+    @assert a.column_count == length(c)
+
+    fill!(c, T(0))
+
+    for i = 1:a.row_count
+        for j = a.rows[i]:(a.rows[i+1]-1)
+            c[a.rows_columns[j]] += b[i] * a.values[a.positions[j]]
+        end
+    end
+end
+
+function solve_sym(cs::CholeskySolver{T}, a::SparseMatrix{T}) where {T}
+    if cs.use_permutation
+        cs.perm = PermuteTable(a)
+    else
+        cs.perm = PermuteTable(a.column_count)
+    end
+
+    cs.ata = sqr_sym(a, cs.perm)
+    cs.ld = cholesky_sym(cs.ata)
+    cs.y = zeros(T, a.column_count)
+end
+
+function solve(
+    cs::CholeskySolver{T},
+    a::SparseMatrix{T},
+    b::Vector{T},
+) where {T}
+    sqr_to!(a, cs.ata, cs.perm)
+
+    if cs.use_normalization
+        cs.norm = norm!(cs.ata)
+    end
+
+    cholesky_to!(cs.ata, cs.ld)
+
+    mul_transposed_to!(a, b, cs.y)
+    cs.y[:] = cs.y[cs.perm.permuted]
+
+    if cs.use_normalization
+        y .*= cs.norm
+    end
+
+    local x = zeros(T, cs.ld.row_count)
+    solve_to!(cs.ld, cs.y, x)
+
+    if cs.use_normalization
+        x .*= cs.norm
+    end
+
+    x[:] = x[cs.perm.primary]
 
     return x
 end

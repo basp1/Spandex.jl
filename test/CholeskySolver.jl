@@ -206,3 +206,111 @@ end
     @test abs(64.7118533875248 - x[4]) < 1e-10
     @test abs(25.7485304673898 - x[5]) < 1e-10
 end
+
+@testset "solve 1" begin
+    local g = Graph{Float64}(10)
+    g[1, 1] = 0.360464443870286
+    g[3, 2] = 0.965038079655014
+    g[10, 2] = 0.806541221607173
+    g[1, 3] = 0.156202523064209
+    g[3, 3] = 0.70277194218269
+    g[7, 3] = 0.398688926587124
+    g[9, 3] = 0.158532504726658
+    g[10, 3] = 0.070915819808533
+    g[7, 4] = 0.552895404215196
+    g[4, 5] = 0.97656582830328
+    g[6, 5] = 0.362469500523493
+    g[2, 6] = 0.510437505153131
+    g[3, 6] = 0.473695871041683
+    g[5, 7] = 0.477123911915246
+    g[8, 7] = 0.582754540178946
+    g[4, 8] = 0.828533162691592
+    g[5, 9] = 0.612247361949774
+    g[6, 10] = 0.570109021624869
+    local a = from_graph(g, 10, 10)
+
+    local solver = CholeskySolver{Float64}(10, 10)
+    solver.use_permutation = false
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = collect(1.0:10.0)
+
+    local x = solve(solver, a, b)
+
+    @test abs(4.6288540824669431 - x[1]) < 1e-10
+    @test abs(9.0912268747716602 - x[2]) < 1e-10
+    @test abs(-4.2799392703685015 - x[3]) < 1e-10
+    @test abs(15.746856145276686 - x[4]) < 1e-10
+    @test abs(-0.60521269977679459 - x[5]) < 1e-10
+    @test abs(-0.59628461522440024 - x[6]) < 1e-10
+    @test abs(13.727906774511695 - x[7]) < 1e-10
+    @test abs(5.5411542327921595 - x[8]) < 1e-10
+    @test abs(-2.5315136968936010 - x[9]) < 1e-10
+    @test abs(10.909090909090908 - x[10]) < 1e-10
+
+    solver.use_permutation = true
+    solve_sym(solver, a)
+
+    x = solve(solver, a, b)
+
+    @test abs(4.6288540824669431 - x[1]) < 1e-10
+    @test abs(9.0912268747716602 - x[2]) < 1e-10
+    @test abs(-4.2799392703685015 - x[3]) < 1e-10
+    @test abs(15.746856145276686 - x[4]) < 1e-10
+    @test abs(x[5]) < 1e-10
+    @test abs(-0.59628461522440024 - x[6]) < 1e-10
+    @test abs(13.727906774511695 - x[7]) < 1e-10
+    @test abs(4.8278091694066978 - x[8]) < 1e-10
+    @test abs(-2.5315136968936010 - x[9]) < 1e-10
+    @test abs(10.524302848075246 - x[10]) < 1e-10
+end
+
+@testset "solve 2" begin
+    local g = Graph{Float64}(3)
+    g[1, 2] = 1.0
+    g[1, 3] = 1.0
+    g[2, 1] = 2.0
+    g[2, 2] = 4.0
+    g[2, 3] = -2.0
+    g[3, 2] = 3.0
+    g[3, 3] = 15.0
+    local a = from_graph(g, 3, 3)
+
+    local solver = CholeskySolver{Float64}(3, 3)
+    solver.use_permutation = false
+    solver.use_normalization = false
+
+    solve_sym(solver, a)
+
+    local b = [17.0, 2.89, -3.3]
+
+    local x = solve(solver, a, b)
+
+    @test abs(-46.1300 - x[1]) < 1e-8
+    @test abs(21.5250 - x[2]) < 1e-8
+    @test abs(-4.5250 - x[3]) < 1e-8
+
+    local y = [
+        x[2] * get_rowwise(a, 1, 2) +
+        x[3] * get_rowwise(a, 1, 3),
+        x[1] * get_rowwise(a, 2, 1) +
+        x[2] * get_rowwise(a, 2, 2) +
+        x[3] * get_rowwise(a, 2, 3),
+        x[2] * get_rowwise(a, 3, 2) +
+        x[3] * get_rowwise(a, 3, 3),
+    ]
+
+    @test abs(b[1] - y[1]) < 1e-8
+    @test abs(b[2] - y[2]) < 1e-8
+    @test abs(b[3] - y[3]) < 1e-8
+
+    solver.use_permutation = true
+    solve_sym(solver, a)
+    x = solve(solver, a, b)
+
+    @test abs(-46.1300 - x[1]) < 1e-8
+    @test abs(21.5250 - x[2]) < 1e-8
+    @test abs(-4.5250 - x[3]) < 1e-8
+end
