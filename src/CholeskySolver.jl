@@ -207,9 +207,11 @@ function mul_transposed_to!(a::SparseMatrix{T}, b, c::Vector{T}) where {T}
 
     fill!(c, T(0))
 
-    for i = 1:a.row_count
-        for j = a.rows[i]:(a.rows[i+1]-1)
-            c[a.rows_columns[j]] += b[i] * a.values[a.positions[j]]
+    @inbounds begin
+        for i = 1:a.row_count
+            for j = a.rows[i]:(a.rows[i+1]-1)
+                c[a.rows_columns[j]] += b[i] * a.values[a.positions[j]]
+            end
         end
     end
 end

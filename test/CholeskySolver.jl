@@ -293,13 +293,11 @@ end
     @test abs(-4.5250 - x[3]) < 1e-8
 
     local y = [
-        x[2] * get_rowwise(a, 1, 2) +
-        x[3] * get_rowwise(a, 1, 3),
+        x[2] * get_rowwise(a, 1, 2) + x[3] * get_rowwise(a, 1, 3),
         x[1] * get_rowwise(a, 2, 1) +
         x[2] * get_rowwise(a, 2, 2) +
         x[3] * get_rowwise(a, 2, 3),
-        x[2] * get_rowwise(a, 3, 2) +
-        x[3] * get_rowwise(a, 3, 3),
+        x[2] * get_rowwise(a, 3, 2) + x[3] * get_rowwise(a, 3, 3),
     ]
 
     @test abs(b[1] - y[1]) < 1e-8
