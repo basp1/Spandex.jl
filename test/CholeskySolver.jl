@@ -734,9 +734,7 @@ end
 
     solve_sym(solver, a)
 
-    local b = [17.0, 2.89, -3.3]
-
-    local x = solve(solver, a, b)
+    local x = solve(solver, a, [17.0, 2.89, -3.3])
 
     local m = SparseArray{Float64}(n)
     m[1] = 7.0
