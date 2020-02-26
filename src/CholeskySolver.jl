@@ -245,7 +245,7 @@ function solve(
     cs.y[:] = cs.y[cs.perm.permuted]
 
     if cs.use_normalization
-        y .*= cs.norm
+        cs.y .*= cs.norm
     end
 
     local x = zeros(T, cs.ld.row_count)
