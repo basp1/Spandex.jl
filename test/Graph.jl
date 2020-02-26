@@ -51,7 +51,7 @@ end
     @test ismissing(a[1, 2])
 end
 
-@testset "disconnect 1" begin
+@testset "disconnect! 1" begin
     local a = Graph{Char}(10)
 
     a[1, 1] = '-'
@@ -76,7 +76,7 @@ end
     @test equals(a, e)
 end
 
-@testset "disconnect 2" begin
+@testset "disconnect! 2" begin
     local a = Graph{Char}(10)
 
     a[1, 1] = '-'
@@ -104,7 +104,7 @@ end
     @test equals(a, e)
 end
 
-@testset "disconnect 3" begin
+@testset "disconnect! 3" begin
     local a = Graph{Char}(10)
 
     a[1, 1] = '-'
@@ -140,7 +140,7 @@ end
     @test equals(a, e)
 end
 
-@testset "disconnect 4" begin
+@testset "disconnect! 4" begin
     local a = Graph{Char}(10)
 
     a[1, 1] = '-'
@@ -173,7 +173,7 @@ end
     @test equals(a, e)
 end
 
-@testset "sort 1" begin
+@testset "sort! 1" begin
     local a = Graph{Char}(10)
 
     a[1, 1] = '-'
@@ -196,7 +196,7 @@ end
     @test equals(a, b)
 end
 
-@testset "sort 2" begin
+@testset "sort! 2" begin
     local a = Graph{Char}(10)
 
     a[1, 1] = '-'
@@ -214,6 +214,8 @@ end
     a[1, 2] = '-'
     a[1, 1] = '-'
 
+    @test !equals(a, b)
+
     sort!(a)
     sort!(b)
 
@@ -226,6 +228,8 @@ end
     a[1, 1] = '-'
     a[1, 2] = '-'
     a[1, 3] = '-'
+
+    @test !equals(a, b)
 
     sort!(a)
     sort!(b)

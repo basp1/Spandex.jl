@@ -34,7 +34,7 @@ end
     @test 3 == u[3]
 end
 
-@testset "set 1" begin
+@testset "set! 1" begin
     local values = [3, 8, 6, 4, 2, 5, 9, 0, 7, 1]
     local u = SegmentTree{Int64}(values, max, typemin(Int64))
     local v = SegmentTree{Int64}(10, max, typemin(Int64))
@@ -48,7 +48,7 @@ end
     @test equals(u, v)
 end
 
-@testset "set 2" begin
+@testset "set! 2" begin
     local u =
         SegmentTree{Int64}([3, 8, 6, 4, 2, 5, 9, 0, 7, 1], max, typemin(Int64))
 

@@ -185,7 +185,7 @@ end
     @test get_columnwise(a, 3, 1) == get_rowwise(a, 3, 1)
 end
 
-@testset "set 1" begin
+@testset "set! 1" begin
     local a = from_csr(
         3,
         4,
