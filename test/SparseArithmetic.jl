@@ -164,6 +164,13 @@ end
     @test 6 == z[1]
     @test 15 == z[2]
     @test 24 == z[3]
+
+    y = from_csr(3, 1, [1, 1, 2, 3], [1, 1], [3, 2])
+    z = mul(a, y)
+    @test 3 == z.nnz
+    @test 6 == get_rowwise(z, 1, 1)
+    @test 15 == get_rowwise(z, 2, 1)
+    @test 24 == get_rowwise(z, 3, 1)
 end
 
 @testset "mul 5" begin
@@ -177,22 +184,29 @@ end
     g[4, 3] = 12
     local a = from_graph(g, 4, 3)
 
-    local x = [0, 2, 0]
-    local z = mul(a, x)
-    @test 4 == length(z)
-    @test 0 == z[1]
-    @test 10 == z[2]
-    @test 16 == z[3]
-    @test 22 == z[4]
+    local b1 = [0, 2, 0]
+    local c1 = mul(a, b1)
+    @test 4 == length(c1)
+    @test 0 == c1[1]
+    @test 10 == c1[2]
+    @test 16 == c1[3]
+    @test 22 == c1[4]
 
-    local y = SparseArray{Int64}(3)
-    y[2] = 2
-    z = mul(a, y)
-    @test 4 == z.size
-    @test 3 == z.nnz
-    @test 10 == z[2]
-    @test 16 == z[3]
-    @test 22 == z[4]
+    local b2 = SparseArray{Int64}(3)
+    b2[2] = 2
+    local c2 = mul(a, b2)
+    @test 4 == c2.size
+    @test 3 == c2.nnz
+    @test 10 == c2[2]
+    @test 16 == c2[3]
+    @test 22 == c2[4]
+
+    local b3 = from_csr(3, 1, [1, 1, 2, 2], [1], [2])
+    local c3 = mul(a, b3)
+    @test 3 == c3.nnz
+    @test 10 == get_rowwise(c3, 2, 1)
+    @test 16 == get_rowwise(c3, 3, 1)
+    @test 22 == get_rowwise(c3, 4, 1)
 end
 
 @testset "sqr 1" begin
