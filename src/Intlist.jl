@@ -1,8 +1,8 @@
 export Intlist
 export is_empty, top, next, contains, push!, pop!, pop_all!, clear!
 
-const NIL = -1
-const EMPTY = 0
+const NIL = Int64(-1)
+const EMPTY = Int64(0)
 
 mutable struct Intlist
     capacity::Int64
@@ -22,7 +22,7 @@ function top(il::Intlist)
     return il.ip
 end
 
-function next(il::Intlist, key::Int64)
+@inbounds function next(il::Intlist, key::Int64)
     if NIL == key
         return key
     else
@@ -30,11 +30,11 @@ function next(il::Intlist, key::Int64)
     end
 end
 
-function contains(il::Intlist, key::Int64)
+@inbounds function contains(il::Intlist, key::Int64)
     return key > 0 && key <= il.capacity && EMPTY != il.values[key]
 end
 
-function Base.:push!(il::Intlist, key::Int64)
+@inbounds function Base.:push!(il::Intlist, key::Int64)
     @assert key > 0 && key <= il.capacity
 
     if contains(il, key)
@@ -47,7 +47,7 @@ function Base.:push!(il::Intlist, key::Int64)
     il.size += 1
 end
 
-function Base.:pop!(il::Intlist)
+@inbounds function Base.:pop!(il::Intlist)
     @assert il.size > 0
 
     local key = il.ip
@@ -58,7 +58,7 @@ function Base.:pop!(il::Intlist)
     return key
 end
 
-function pop_all!(il::Intlist)
+@inbounds function pop_all!(il::Intlist)
     local n = il.size
     local values = zeros(Int64, n)
 
@@ -69,7 +69,7 @@ function pop_all!(il::Intlist)
     return values
 end
 
-function clear!(il::Intlist)
+@inbounds function clear!(il::Intlist)
     while il.size > 0
         pop!(il)
     end

@@ -113,19 +113,21 @@ function from_graph(g::Graph{T}, row_count, column_count::Int64) where {T}
 
     sm.rows[1] = 1
 
-    local values = Vector{T}()
+    local n = 1
+    local values = zeros(T, sm.nnz)
     for i = 1:row_count
         local j = g.start[i]
         while NIL != j
-            push!(values, g.edges[j])
-            sm.rows_columns[length(values)] = g.vertices[j]
+            values[n] = g.edges[j]
+            sm.rows_columns[n] = g.vertices[j]
             sm.columns[g.vertices[j]] += 1
             j = g.next[j]
+            n += 1
         end
-        sm.rows[i+1] = length(values) + 1
+        sm.rows[i+1] = n
     end
 
-    local n = 1
+    n = 1
     for i = 1:(column_count+1)
         local t = n
         n += sm.columns[i]

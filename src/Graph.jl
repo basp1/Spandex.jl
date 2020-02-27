@@ -15,7 +15,7 @@ export resize!,
     getindex,
     setindex!
 
-const NIL = -1
+const NIL = Int64(-1)
 
 mutable struct Graph{T}
     start::Vector{Int64}
@@ -25,6 +25,7 @@ mutable struct Graph{T}
 
     size::Int64
     free::Int64
+    capacity::Int64
 
     function Graph{T}(vertex_count::Int64) where {T}
         return new(
@@ -34,6 +35,7 @@ mutable struct Graph{T}
             Vector{T}(),
             0,
             NIL,
+            1,
         )
     end
 end
@@ -48,6 +50,7 @@ function Base.:copy(g::Graph{T}) where {T}
 
     h.size = g.size
     h.free = g.free
+    h.capacity = g.capacity
 
     return h
 end
@@ -60,6 +63,7 @@ end
 function clear!(g::Graph{T}) where {T}
     g.size = 0
     g.free = NIL
+    g.capacity = 1
 
     fill!(g.start, NIL)
 
@@ -119,6 +123,18 @@ function equals(g::Graph{T}, h::Graph{T}) where {T}
     return true
 end
 
+function ensure_capacity!(g::Graph{T}, n::Int64) where {T}
+    if g.capacity <= n
+        while g.capacity < n
+            g.capacity *= 2
+        end
+
+        resize!(g.next, g.capacity)
+        resize!(g.vertices, g.capacity)
+        resize!(g.edges, g.capacity)
+    end
+end
+
 function connect!(g::Graph{T}, edge::T, from::Int64, to::Int64) where {T}
     @assert from > 0 && from <= length(g.start)
     @assert to > 0
@@ -131,9 +147,12 @@ function connect!(g::Graph{T}, edge::T, from::Int64, to::Int64) where {T}
         g.free = g.next[g.free]
     else
         n = g.size + 1
-        push!(g.next, NIL)
-        push!(g.vertices, to)
-        push!(g.edges, edge)
+
+        ensure_capacity!(g, n)
+
+        g.next[n] = NIL
+        g.vertices[n] = to
+        g.edges[n] = edge
     end
 
     if NIL == g.start[from]
