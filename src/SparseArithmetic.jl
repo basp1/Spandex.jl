@@ -287,6 +287,10 @@ function sqr_to!(
                 for k = a.rows[ii]:(a.rows[ii+1]-1)
                     local r = pt.primary[a.rows_columns[k]]
 
+                    if r < j
+                        continue
+                    end
+                    
                     acc[r] += a.values[i] * a.values[a.positions[k]]
                 end
             end
