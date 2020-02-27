@@ -88,7 +88,7 @@ function cholesky_sym(sym::SparseMatrix{T}) where {T}
     return ct
 end
 
-function cholesky_to!(sym, ld::SparseMatrix{T}) where {T}
+function cholesky_to!(sym, ld::SparseMatrix{T}, tolerance = 1e-10) where {T}
     @assert lower_symmetric == sym.layout
     @assert lower_triangle == ld.layout
 
@@ -242,7 +242,7 @@ function solve(
         cs.norm = ones(T, cs.ata.column_count)
     end
 
-    cholesky_to!(cs.ata, cs.ld)
+    cholesky_to!(cs.ata, cs.ld, cs.tolerance)
 
     mul_transposed_to!(a, b, cs.y)
     cs.y[:] = cs.y[cs.perm.permuted]
