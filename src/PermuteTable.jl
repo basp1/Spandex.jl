@@ -58,7 +58,7 @@ mutable struct PermuteTable
     end
 end
 
-function Base.:push!(pt::PermuteTable, prime, perm::Int64)
+function Base.:push!(pt::PermuteTable, prime::Int64, perm::Int64)
     @assert prime <= pt.size
     @assert perm <= pt.size
     @assert 0 == pt.primary[perm] && 0 == pt.permuted[prime]
@@ -67,6 +67,6 @@ function Base.:push!(pt::PermuteTable, prime, perm::Int64)
     pt.permuted[prime] = perm
 end
 
-function equals(pt, tt::PermuteTable)
+function equals(pt::PermuteTable, tt::PermuteTable)
     return pt.primary == tt.primary && pt.permuted == tt.permuted
 end

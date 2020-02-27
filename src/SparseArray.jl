@@ -13,7 +13,7 @@ mutable struct SparseArray{T}
     end
 end
 
-function equals(sa, ta::SparseArray{T}) where {T}
+function equals(sa::SparseArray{T}, ta::SparseArray{T}) where {T}
     return sa.size == ta.size && sa.nnz == ta.nnz &&
            sa.indices == ta.indices && sa.values == ta.values
 end

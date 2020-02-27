@@ -107,7 +107,11 @@ function from_csr(
     return sm
 end
 
-function from_graph(g::Graph{T}, row_count, column_count::Int64) where {T}
+function from_graph(
+    g::Graph{T},
+    row_count::Int64,
+    column_count::Int64,
+) where {T}
     local sm = SparseMatrix{T}(row_count, column_count, g.size)
     sm.nnz = g.size
 
@@ -152,7 +156,7 @@ function from_graph(g::Graph{T}, row_count, column_count::Int64) where {T}
     return sm
 end
 
-function equals(sm, tm::SparseMatrix{T}) where {T}
+function equals(sm::SparseMatrix{T}, tm::SparseMatrix{T}) where {T}
     if sm.nnz != tm.nnz
         return false
     end
@@ -314,16 +318,16 @@ function set_columnwise!(
 end
 
 function Base.:sort!(sm::SparseMatrix{T}) where {T}
-    local old_indices = collect(Int64, 1:sm.nnz)
-    local new_indices = copy(old_indices)
+    local old_indices = 1:sm.nnz
+    local new_indices = collect(old_indices)
 
     for j = 1:sm.column_count
         local range = sm.columns[j]:sm.columns[j+1]-1
         local perm = (sm.columns[j] - 1) .+ sortperm(sm.columns_rows[range])
-        sm.columns_rows[range] = sm.columns_rows[perm]
         new_indices[range] = new_indices[perm]
     end
 
+    sm.columns_rows[old_indices] = sm.columns_rows[new_indices]
     sm.values[old_indices] = sm.values[new_indices]
 
     for j = 1:sm.row_count

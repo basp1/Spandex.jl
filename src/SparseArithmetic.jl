@@ -1,6 +1,6 @@
 export add, add_sym, add_to!, mul, mul_sym, mul_to!, sqr, sqr_sym, sqr_to!
 
-function add(a, b::SparseMatrix{T}) where {T}
+function add(a::SparseMatrix{T}, b::SparseMatrix{T}) where {T}
     @assert a.row_count == b.row_count
     @assert a.column_count == b.column_count
 
@@ -9,7 +9,7 @@ function add(a, b::SparseMatrix{T}) where {T}
     return c
 end
 
-function add_sym(a, b::SparseMatrix{T}) where {T}
+function add_sym(a::SparseMatrix{T}, b::SparseMatrix{T}) where {T}
     @assert a.row_count == b.row_count
     @assert a.column_count == b.column_count
 
@@ -32,7 +32,11 @@ function add_sym(a, b::SparseMatrix{T}) where {T}
     return from_graph(c, a.row_count, a.column_count)
 end
 
-function add_to!(a, b, c::SparseMatrix{T}) where {T}
+function add_to!(
+    a::SparseMatrix{T},
+    b::SparseMatrix{T},
+    c::SparseMatrix{T},
+) where {T}
     @assert a.row_count == b.row_count
     @assert a.column_count == b.column_count
     @assert a.row_count == c.row_count
@@ -59,7 +63,7 @@ function add_to!(a, b, c::SparseMatrix{T}) where {T}
     end
 end
 
-function mul(a, b::SparseMatrix{T}) where {T}
+function mul(a::SparseMatrix{T}, b::SparseMatrix{T}) where {T}
     @assert a.column_count == b.row_count
 
     local c = mul_sym(a, b)
@@ -67,7 +71,7 @@ function mul(a, b::SparseMatrix{T}) where {T}
     return c
 end
 
-function mul_sym(a, b::SparseMatrix{T}) where {T}
+function mul_sym(a::SparseMatrix{T}, b::SparseMatrix{T}) where {T}
     @assert a.column_count == b.row_count
 
     clear!(a.list)
@@ -90,7 +94,11 @@ function mul_sym(a, b::SparseMatrix{T}) where {T}
     return from_graph(c, a.row_count, b.column_count)
 end
 
-function mul_to!(a, b, c::SparseMatrix{T}) where {T}
+function mul_to!(
+    a::SparseMatrix{T},
+    b::SparseMatrix{T},
+    c::SparseMatrix{T},
+) where {T}
     @assert a.row_count == c.row_count
     @assert a.column_count == b.row_count
     @assert b.column_count == c.column_count
@@ -121,7 +129,7 @@ function mul(a::SparseMatrix{T}, b::Vector{T}) where {T}
     return c
 end
 
-function mul_to!(a::SparseMatrix{T}, b, c::Vector{T}) where {T}
+function mul_to!(a::SparseMatrix{T}, b::Vector{T}, c::Vector{T}) where {T}
     @assert a.column_count == length(b)
     @assert a.row_count == length(c)
 
@@ -138,7 +146,11 @@ function mul(a::SparseMatrix{T}, b::SparseArray{T}) where {T}
     return c
 end
 
-function mul_to!(a::SparseMatrix{T}, b, c::SparseArray{T}) where {T}
+function mul_to!(
+    a::SparseMatrix{T},
+    b::SparseArray{T},
+    c::SparseArray{T},
+) where {T}
     @assert a.column_count == b.size
     @assert a.row_count == c.size
 
@@ -194,7 +206,7 @@ function sqr_sym(a::SparseMatrix{T}) where {T}
     return ata
 end
 
-function sqr_to!(a, ata::SparseMatrix{T}) where {T}
+function sqr_to!(a::SparseMatrix{T}, ata::SparseMatrix{T}) where {T}
     @assert default_layout == ata.layout
 
     @inbounds begin
@@ -255,7 +267,11 @@ function sqr_sym(a::SparseMatrix{T}, pt::PermuteTable) where {T}
     return ata
 end
 
-function sqr_to!(a, ata::SparseMatrix{T}, pt::PermuteTable) where {T}
+function sqr_to!(
+    a::SparseMatrix{T},
+    ata::SparseMatrix{T},
+    pt::PermuteTable,
+) where {T}
     @assert default_layout == a.layout
     @assert lower_symmetric == ata.layout
 

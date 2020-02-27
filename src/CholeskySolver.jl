@@ -19,7 +19,7 @@ mutable struct CholeskySolver{T}
     use_permutation::Bool
     use_normalization::Bool
 
-    function CholeskySolver{T}(row_count, column_count::Int64) where {T}
+    function CholeskySolver{T}(row_count::Int64, column_count::Int64) where {T}
         local cs = new()
 
         cs.row_count = row_count
@@ -31,7 +31,7 @@ mutable struct CholeskySolver{T}
 
         cs.use_permutation = true
         cs.use_normalization = true
-
+        
         return cs
     end
 end
@@ -88,7 +88,11 @@ function cholesky_sym(sym::SparseMatrix{T}) where {T}
     return ct
 end
 
-function cholesky_to!(sym, ld::SparseMatrix{T}, tolerance = 1e-10) where {T}
+function cholesky_to!(
+    sym::SparseMatrix{T},
+    ld::SparseMatrix{T},
+    tolerance::Float64 = 1e-10,
+) where {T}
     @assert lower_symmetric == sym.layout
     @assert lower_triangle == ld.layout
 
@@ -129,7 +133,11 @@ function cholesky_to!(sym, ld::SparseMatrix{T}, tolerance = 1e-10) where {T}
     end
 end
 
-function solve_to!(ld::SparseMatrix{T}, b, result::Vector{T}) where {T}
+function solve_to!(
+    ld::SparseMatrix{T},
+    b::Vector{T},
+    result::Vector{T},
+) where {T}
     @assert lower_triangle == ld.layout
     @assert length(b) == ld.row_count
 
@@ -202,7 +210,11 @@ function solve_upper(ld::SparseMatrix{T}, z::Vector{T}) where {T}
     return x
 end
 
-function mul_transposed_to!(a::SparseMatrix{T}, b, c::Vector{T}) where {T}
+function mul_transposed_to!(
+    a::SparseMatrix{T},
+    b::Vector{T},
+    c::Vector{T},
+) where {T}
     @assert a.row_count == length(b)
     @assert a.column_count == length(c)
 

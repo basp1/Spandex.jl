@@ -36,7 +36,7 @@ mutable struct SegmentTree{T}
     end
 end
 
-function equals(st, tt::SegmentTree{T}) where {T}
+function equals(st::SegmentTree{T}, tt::SegmentTree{T}) where {T}
     if st.capacity != tt.capacity
         return false
     end
@@ -84,7 +84,7 @@ function Base.:getindex(st::SegmentTree{T}, index::Int64) where {T}
     return range(st, index, index)
 end
 
-function Base.:range(st::SegmentTree{T}, left, right::Int64) where {T}
+function Base.:range(st::SegmentTree{T}, left::Int64, right::Int64) where {T}
     @assert left <= right
     @assert left <= st.capacity
     @assert right <= st.capacity
