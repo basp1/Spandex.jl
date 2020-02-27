@@ -93,6 +93,7 @@ end
 
 function getindex(eg::EliminationGraph, vertex::Int64)
     local vertices = Vector{Int64}()
+    sizehint!(vertices, 4)
     local i = eg.adj.start[vertex]
 
     while NIL != i

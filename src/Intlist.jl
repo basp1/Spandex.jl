@@ -14,11 +14,11 @@ mutable struct Intlist
     Intlist(capacity::Int64) = new(capacity, 0, fill(EMPTY, capacity), NIL)
 end
 
-function is_empty(il::Intlist)
+function is_empty(il::Intlist)::Bool
     return 0 == il.size
 end
 
-function top(il::Intlist)
+function top(il::Intlist)::Int64
     return il.ip
 end
 
@@ -30,7 +30,7 @@ end
     end
 end
 
-@inbounds function contains(il::Intlist, key::Int64)
+@inbounds function contains(il::Intlist, key::Int64)::Bool
     return key > 0 && key <= il.capacity && EMPTY != il.values[key]
 end
 
@@ -45,9 +45,11 @@ end
     il.ip = key
 
     il.size += 1
+
+    return
 end
 
-@inbounds function Base.:pop!(il::Intlist)
+@inbounds function Base.:pop!(il::Intlist)::Int64
     @assert il.size > 0
 
     local key = il.ip
@@ -58,7 +60,7 @@ end
     return key
 end
 
-@inbounds function pop_all!(il::Intlist)
+@inbounds function pop_all!(il::Intlist)::Vector{Int64}
     local n = il.size
     local values = zeros(Int64, n)
 
@@ -73,4 +75,6 @@ end
     while il.size > 0
         pop!(il)
     end
+
+    return
 end
