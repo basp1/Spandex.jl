@@ -10,7 +10,7 @@ mutable struct PriorityQueue{T}
     function PriorityQueue{T}(select, capacity::Int64 = 0) where {T}
         local pq = new()
 
-        pq.values = zeros(T, 0)
+        pq.values = Vector{T}()
         sizehint!(pq.values, capacity)
         pq.select = select
         pq.size = 0
