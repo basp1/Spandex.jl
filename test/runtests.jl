@@ -36,3 +36,7 @@ end
 @testset "Normalization" begin
     include("Normalization.jl")
 end
+
+@testset "PriorityQueue" begin
+    include("PriorityQueue.jl")
+end

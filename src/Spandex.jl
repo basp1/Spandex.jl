@@ -4,6 +4,7 @@ include("Intlist.jl")
 include("SparseArray.jl")
 include("Graph.jl")
 include("SegmentTree.jl")
+include("PriorityQueue.jl")
 
 include("SparseMatrix.jl")
 include("EliminationGraph.jl")
