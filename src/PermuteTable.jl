@@ -33,7 +33,13 @@ mutable struct PermuteTable
             push!(init, (i, eg.size[i]))
         end
 
-        local select = (a, b) -> return a[2] < b[2] ? a : b
+        function select(
+            a::Tuple{Int64,Int64},
+            b::Tuple{Int64,Int64},
+        )::Tuple{Int64,Int64}
+            return a[2] < b[2] ? a : b
+        end
+        
         local st =
             SegmentTree{Tuple{Int64,Int64}}(init, select, (0, typemax(Int64)))
 
