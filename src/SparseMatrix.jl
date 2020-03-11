@@ -108,7 +108,7 @@ function from_csr(
 end
 
 function from_graph(
-    g::Graph{T},
+    g::DirectedGraph{T},
     row_count::Int64,
     column_count::Int64,
 ) where {T}

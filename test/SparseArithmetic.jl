@@ -2,7 +2,7 @@ using Test
 using Spandex
 
 @testset "add 1" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 2] = 5
     g[1, 3] = 6
     g[2, 1] = 1
@@ -42,7 +42,7 @@ using Spandex
 end
 
 @testset "mul 1" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 1] = 6
     g[1, 2] = -4
     g[1, 3] = 7
@@ -80,7 +80,7 @@ end
 end
 
 @testset "mul 2" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 1] = 1
     g[1, 3] = 3
     g[2, 2] = 5
@@ -114,7 +114,7 @@ end
 end
 
 @testset "mul 3" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 1] = 1
     g[1, 3] = 3
     g[2, 2] = 5
@@ -141,7 +141,7 @@ end
 end
 
 @testset "mul 4" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 1] = 1
     g[1, 3] = 3
     g[2, 2] = 5
@@ -174,7 +174,7 @@ end
 end
 
 @testset "mul 5" begin
-    local g = Graph{Int64}(4)
+    local g = DirectedGraph{Int64}(4)
     g[1, 1] = 1
     g[1, 3] = 3
     g[2, 2] = 5
@@ -210,7 +210,7 @@ end
 end
 
 @testset "sqr 1" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 2] = 1
     g[2, 1] = 2
     g[3, 2] = 3
@@ -224,7 +224,7 @@ end
 end
 
 @testset "sqr 2" begin
-    local g = Graph{Float64}(4)
+    local g = DirectedGraph{Float64}(4)
     g[2, 5] = 0.02675
     g[3, 1] = 0.78664
     g[4, 1] = 0.26856
@@ -260,7 +260,7 @@ end
 end
 
 @testset "sqr 3" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 2] = 1
     g[2, 1] = 2
     g[3, 2] = 3
@@ -281,7 +281,7 @@ end
 end
 
 @testset "sqr 4" begin
-    local g = Graph{Float64}(4)
+    local g = DirectedGraph{Float64}(4)
     g[2, 5] = 0.02674817948
     g[3, 1] = 0.7866442604
     g[4, 1] = 0.2685635172

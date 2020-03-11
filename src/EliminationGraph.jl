@@ -3,7 +3,7 @@ export EliminationGraph
 export eliminate!, is_leaf, getindex
 
 mutable struct EliminationGraph
-    adj::Graph{Bool}
+    adj::DirectedGraph{Bool}
     list::Intlist
     size::Vector{Int64}
 
@@ -14,7 +14,7 @@ mutable struct EliminationGraph
 
         local n = a.column_count
         eg.list = Intlist(n)
-        eg.adj = Graph{Bool}(a.column_count)
+        eg.adj = DirectedGraph{Bool}(a.column_count)
         eg.size = zeros(Int64, n)
 
         for j = 1:n

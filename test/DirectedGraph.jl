@@ -2,7 +2,7 @@ using Test
 using Spandex
 
 @testset "are_connected 1" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[2, 1] = '-'
@@ -17,7 +17,7 @@ using Spandex
 end
 
 @testset "are_connected 2" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[1, 2] = '-'
@@ -52,7 +52,7 @@ end
 end
 
 @testset "disconnect! 1" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[1, 2] = '-'
@@ -66,7 +66,7 @@ end
     disconnect!(a, 3, 1)
     disconnect!(a, 3, 2)
 
-    local e = Graph{Char}(10)
+    local e = DirectedGraph{Char}(10)
     e[1, 1] = '-'
     e[2, 1] = '-'
 
@@ -77,7 +77,7 @@ end
 end
 
 @testset "disconnect! 2" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[1, 2] = '-'
@@ -94,7 +94,7 @@ end
     disconnect!(a, 1, 1)
     a[1, 1] = '-'
 
-    local e = Graph{Char}(10)
+    local e = DirectedGraph{Char}(10)
     e[1, 1] = '-'
     e[2, 1] = '-'
 
@@ -105,7 +105,7 @@ end
 end
 
 @testset "disconnect! 3" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[1, 2] = '-'
@@ -141,7 +141,7 @@ end
 end
 
 @testset "disconnect! 4" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[1, 2] = '-'
@@ -174,7 +174,7 @@ end
 end
 
 @testset "sort! 1" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[1, 2] = '-'
@@ -197,7 +197,7 @@ end
 end
 
 @testset "sort! 2" begin
-    local a = Graph{Char}(10)
+    local a = DirectedGraph{Char}(10)
 
     a[1, 1] = '-'
     a[1, 2] = '-'

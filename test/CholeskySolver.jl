@@ -2,7 +2,7 @@ using Test
 using Spandex
 
 @testset "cholesky_sym 1" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 1] = 6
     g[2, 1] = 8
     g[2, 2] = 27
@@ -25,7 +25,7 @@ using Spandex
 end
 
 @testset "cholesky_sym 2" begin
-    local g = Graph{Int64}(11)
+    local g = DirectedGraph{Int64}(11)
     g[1, 1] = 1
     g[2, 2] = 2
     g[3, 2] = 3
@@ -69,7 +69,7 @@ end
 end
 
 @testset "cholesky_to! 1" begin
-    local g = Graph{Float64}(3)
+    local g = DirectedGraph{Float64}(3)
     g[1, 1] = 6.0
     g[2, 1] = 8.0
     g[2, 2] = 27.0
@@ -99,7 +99,7 @@ end
 end
 
 @testset "cholesky_to! 2" begin
-    local g = Graph{Float64}(5)
+    local g = DirectedGraph{Float64}(5)
     g[1, 1] = 0.454154210872255
     g[2, 1] = 0.493313382040145
     g[2, 2] = 0.673117517240105
@@ -147,7 +147,7 @@ end
 end
 
 @testset "solve_to! 1" begin
-    local g = Graph{Float64}(3)
+    local g = DirectedGraph{Float64}(3)
     g[1, 1] = 38.0
     g[2, 1] = 22.0
     g[2, 2] = 17.0
@@ -172,7 +172,7 @@ end
 end
 
 @testset "solve_to! 2" begin
-    local g = Graph{Float64}(5)
+    local g = DirectedGraph{Float64}(5)
     g[1, 1] = 0.339721892599889
     g[2, 1] = -0.117511897064494
     g[2, 2] = 0.61348986691309
@@ -208,7 +208,7 @@ end
 end
 
 @testset "solve 1" begin
-    local g = Graph{Float64}(10)
+    local g = DirectedGraph{Float64}(10)
     g[1, 1] = 0.360464443870286
     g[3, 2] = 0.965038079655014
     g[10, 2] = 0.806541221607173
@@ -268,7 +268,7 @@ end
 end
 
 @testset "solve 2" begin
-    local g = Graph{Float64}(3)
+    local g = DirectedGraph{Float64}(3)
     g[1, 2] = 1.0
     g[1, 3] = 1.0
     g[2, 1] = 2.0
@@ -314,7 +314,7 @@ end
 end
 
 @testset "solve 3" begin
-    local g = Graph{Float64}(10)
+    local g = DirectedGraph{Float64}(10)
     g[1, 1] = 0.360464443870286
     g[3, 2] = 0.965038079655014
     g[10, 2] = 0.806541221607173
@@ -356,7 +356,7 @@ end
 end
 
 @testset "solve 4" begin
-    local g = Graph{Float64}(10)
+    local g = DirectedGraph{Float64}(10)
     g[1, 1] = 0.360464443870286
     g[3, 2] = 0.965038079655014
     g[10, 2] = 0.806541221607173
@@ -398,7 +398,7 @@ end
 end
 
 @testset "update 1" begin
-    local g = Graph{Float64}(3)
+    local g = DirectedGraph{Float64}(3)
     g[1, 2] = 1.0
     g[1, 3] = 1.0
     g[2, 1] = 2.0
@@ -436,7 +436,7 @@ end
 end
 
 @testset "update 2" begin
-    local g = Graph{Float64}(3)
+    local g = DirectedGraph{Float64}(3)
     g[1, 2] = 1.0
     g[1, 3] = 1.0
     g[2, 1] = 2.0
@@ -474,7 +474,7 @@ end
 end
 
 @testset "update 3" begin
-    local g = Graph{Float64}(3)
+    local g = DirectedGraph{Float64}(3)
     g[1, 2] = 1.0
     g[1, 3] = 1.0
     g[2, 1] = 2.0
@@ -508,7 +508,7 @@ end
 end
 
 @testset "update 4" begin
-    local g = Graph{Float64}(10)
+    local g = DirectedGraph{Float64}(10)
     g[1, 1] = 0.360464443870286
     g[3, 2] = 0.965038079655014
     g[10, 2] = 0.806541221607173
@@ -557,7 +557,7 @@ end
 end
 
 @testset "downdate 1" begin
-    local g = Graph{Float64}(3)
+    local g = DirectedGraph{Float64}(3)
     g[1, 2] = 1.0
     g[1, 3] = 1.0
     g[2, 1] = 2.0
@@ -589,7 +589,7 @@ end
 end
 
 @testset "downdate 2" begin
-    local g = Graph{Float64}(10)
+    local g = DirectedGraph{Float64}(10)
     g[1, 1] = 0.360464443870286
     g[3, 2] = 0.965038079655014
     g[10, 2] = 0.806541221607173
@@ -634,7 +634,7 @@ end
 end
 
 @testset "downdate 3" begin
-    local g = Graph{Float64}(10)
+    local g = DirectedGraph{Float64}(10)
     g[1, 1] = 0.360464443870286
     g[3, 2] = 0.965038079655014
     g[10, 2] = 0.806541221607173
@@ -676,7 +676,7 @@ end
 end
 
 @testset "downdate 4" begin
-    local g = Graph{Float64}(10)
+    local g = DirectedGraph{Float64}(10)
     g[1, 1] = 0.360464443870286
     g[3, 2] = 0.965038079655014
     g[10, 2] = 0.806541221607173

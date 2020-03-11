@@ -31,7 +31,7 @@ mutable struct CholeskySolver{T}
 
         cs.use_permutation = true
         cs.use_normalization = true
-        
+
         return cs
     end
 end
@@ -41,7 +41,7 @@ function cholesky_sym(sym::SparseMatrix{T}) where {T}
 
     local n = sym.row_count
 
-    local g = Graph{T}(n)
+    local g = DirectedGraph{T}(n)
 
     local columns = Vector{Int64}()
     clear!(sym.list)

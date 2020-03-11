@@ -36,7 +36,7 @@ end
         [10, 11, 12, 13, 20, 21, 23, 30, 31, 32, 33],
     )
 
-    local graph = Graph{Int64}(3)
+    local graph = DirectedGraph{Int64}(3)
     graph[1, 1] = 10
     graph[1, 2] = 11
     graph[1, 3] = 12

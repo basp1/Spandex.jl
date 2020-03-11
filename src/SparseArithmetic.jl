@@ -13,7 +13,7 @@ function add_sym(a::SparseMatrix{T}, b::SparseMatrix{T}) where {T}
     @assert a.row_count == b.row_count
     @assert a.column_count == b.column_count
 
-    local c = Graph{T}(a.row_count)
+    local c = DirectedGraph{T}(a.row_count)
 
     clear!(a.list)
 
@@ -76,7 +76,7 @@ function mul_sym(a::SparseMatrix{T}, b::SparseMatrix{T}) where {T}
 
     clear!(a.list)
 
-    local c = Graph{T}(a.row_count)
+    local c = DirectedGraph{T}(a.row_count)
 
     for j = 1:b.column_count
         for i = b.columns[j]:(b.columns[j+1]-1)
@@ -182,7 +182,7 @@ function sqr(a::SparseMatrix{T}) where {T}
 end
 
 function sqr_sym(a::SparseMatrix{T}) where {T}
-    local g = Graph{T}(a.column_count)
+    local g = DirectedGraph{T}(a.column_count)
     clear!(a.list)
 
     for j = 1:a.column_count
@@ -235,7 +235,7 @@ end
 function sqr_sym(a::SparseMatrix{T}, pt::PermuteTable) where {T}
     @assert default_layout == a.layout
 
-    local g = Graph{T}(a.column_count)
+    local g = DirectedGraph{T}(a.column_count)
     clear!(a.list)
 
     for j = 1:a.column_count
@@ -290,7 +290,7 @@ function sqr_to!(
                     if r < j
                         continue
                     end
-                    
+
                     acc[r] += a.values[i] * a.values[a.positions[k]]
                 end
             end

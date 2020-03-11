@@ -5,8 +5,8 @@ using Spandex
     include("Intlist.jl")
 end
 
-@testset "Graph" begin
-    include("Graph.jl")
+@testset "DirectedGraph" begin
+    include("DirectedGraph.jl")
 end
 
 @testset "SparseArray" begin

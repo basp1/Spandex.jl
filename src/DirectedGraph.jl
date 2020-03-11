@@ -1,4 +1,4 @@
-export Graph
+export DirectedGraph
 
 import Base.resize!, Base.insert!, Base.getindex, Base.setindex!
 
@@ -17,8 +17,9 @@ export resize!,
 
 const NIL = Int64(-1)
 
-mutable struct Graph{T}
+mutable struct DirectedGraph{T}
     start::Vector{Int64}
+    count::Vector{Int64}
     next::Vector{Int64}
     vertices::Vector{Int64}
     edges::Vector{T}
@@ -27,9 +28,10 @@ mutable struct Graph{T}
     free::Int64
     capacity::Int64
 
-    function Graph{T}(vertex_count::Int64) where {T}
+    function DirectedGraph{T}(vertex_count::Int64) where {T}
         return new(
-            fill(NIL, (vertex_count)),
+            fill(NIL, vertex_count),
+            zeros(Int64, vertex_count),
             Vector{Int64}(),
             Vector{Int64}(),
             Vector{T}(),
@@ -40,10 +42,11 @@ mutable struct Graph{T}
     end
 end
 
-function Base.:copy(g::Graph{T}) where {T}
-    local h = Graph{T}(0)
+function Base.:copy(g::DirectedGraph{T}) where {T}
+    local h = DirectedGraph{T}(0)
 
     h.start = copy(g.start)
+    h.count = copy(g.count)
     h.next = copy(g.next)
     h.vertices = copy(g.vertices)
     h.edges = copy(g.edges)
@@ -55,34 +58,37 @@ function Base.:copy(g::Graph{T}) where {T}
     return h
 end
 
-function Base.:resize!(g::Graph{T}, vertex_count::Int64) where {T}
+function Base.:resize!(g::DirectedGraph{T}, vertex_count::Int64) where {T}
     resize!(g.start, vertex_count)
+    resize!(g.count, vertex_count)
     clear!(g)
 end
 
-function clear!(g::Graph{T}) where {T}
+function clear!(g::DirectedGraph{T}) where {T}
     g.size = 0
     g.free = NIL
     g.capacity = 1
 
     fill!(g.start, NIL)
+    fill!(g.count, 0)
 
     resize!(g.next, 0)
     resize!(g.vertices, 0)
     resize!(g.edges, 0)
 end
 
-function add_vertex!(g::Graph{T}) where {T}
+function add_vertex!(g::DirectedGraph{T}) where {T}
     push!(g.start, NIL)
+    push!(g.count, 0)
 end
 
-function has_connections(g::Graph{T}, vertex::Int64) where {T}
+function has_connections(g::DirectedGraph{T}, vertex::Int64) where {T}
     @assert vertex > 0 && vertex <= length(g.start)
 
     return NIL != g.start[vertex]
 end
 
-function are_connected(g::Graph{T}, from::Int64, to::Int64) where {T}
+function are_connected(g::DirectedGraph{T}, from::Int64, to::Int64) where {T}
     @assert from > 0 && from <= length(g.start)
     @assert to > 0
 
@@ -93,13 +99,17 @@ function are_connected(g::Graph{T}, from::Int64, to::Int64) where {T}
     return !ismissing(g[from, to])
 end
 
-function equals(g::Graph{T}, h::Graph{T}) where {T}
+function equals(g::DirectedGraph{T}, h::DirectedGraph{T}) where {T}
     if g.size != h.size
         return false
     end
 
     local n = length(g.start)
     for i = 1:n
+        if g.count[i] != h.count[i]
+            return false
+        end
+
         local j = g.start[i]
         local k = h.start[i]
 
@@ -123,7 +133,7 @@ function equals(g::Graph{T}, h::Graph{T}) where {T}
     return true
 end
 
-function ensure_capacity!(g::Graph{T}, n::Int64) where {T}
+function ensure_capacity!(g::DirectedGraph{T}, n::Int64) where {T}
     if g.capacity <= n
         while g.capacity < n
             g.capacity *= 2
@@ -135,7 +145,12 @@ function ensure_capacity!(g::Graph{T}, n::Int64) where {T}
     end
 end
 
-function connect!(g::Graph{T}, edge::T, from::Int64, to::Int64) where {T}
+function connect!(
+    g::DirectedGraph{T},
+    edge::T,
+    from::Int64,
+    to::Int64,
+) where {T}
     @assert from > 0 && from <= length(g.start)
     @assert to > 0
 
@@ -161,11 +176,17 @@ function connect!(g::Graph{T}, edge::T, from::Int64, to::Int64) where {T}
 
     g.next[n] = g.start[from]
     g.start[from] = n
+    g.count[from] += 1
 
     g.size += 1
 end
 
-function Base.:setindex!(g::Graph{T}, edge::T, from::Int64, to::Int64) where {T}
+function Base.:setindex!(
+    g::DirectedGraph{T},
+    edge::T,
+    from::Int64,
+    to::Int64,
+) where {T}
     if !are_connected(g, from, to)
         connect!(g, edge, from, to)
     else
@@ -180,7 +201,7 @@ function Base.:setindex!(g::Graph{T}, edge::T, from::Int64, to::Int64) where {T}
     end
 end
 
-function Base.:getindex(g::Graph{T}, from::Int64, to::Int64) where {T}
+function Base.:getindex(g::DirectedGraph{T}, from::Int64, to::Int64) where {T}
     @assert from > 0 && from <= length(g.start)
     @assert to > 0
 
@@ -195,7 +216,7 @@ function Base.:getindex(g::Graph{T}, from::Int64, to::Int64) where {T}
     return missing
 end
 
-function disconnect!(g::Graph{T}, from::Int64, to::Int64) where {T}
+function disconnect!(g::DirectedGraph{T}, from::Int64, to::Int64) where {T}
     @assert from > 0 && from <= length(g.start)
     @assert to > 0
 
@@ -230,10 +251,11 @@ function disconnect!(g::Graph{T}, from::Int64, to::Int64) where {T}
         g.free = k
     end
 
+    g.count[from] -= 1
     g.size -= 1
 end
 
-function disconnect!(g::Graph{T}, vertex::Int64) where {T}
+function disconnect!(g::DirectedGraph{T}, vertex::Int64) where {T}
     @assert vertex > 0 && vertex <= length(g.start)
 
     if !has_connections(g, vertex)
@@ -251,10 +273,11 @@ function disconnect!(g::Graph{T}, vertex::Int64) where {T}
     g.next[p] = g.free
     g.free = g.start[vertex]
     g.start[vertex] = NIL
+    g.count[vertex] = 0
     g.size -= n
 end
 
-function is_leaf(g::Graph{T}, vertex::Int64) where {T}
+function is_leaf(g::DirectedGraph{T}, vertex::Int64) where {T}
     @assert vertex > 0 && vertex <= length(g.start)
 
     if !has_connections(g, vertex)
@@ -287,7 +310,7 @@ function is_leaf(g::Graph{T}, vertex::Int64) where {T}
     return true
 end
 
-function Base.:sort!(g::Graph{T}) where {T}
+function Base.:sort!(g::DirectedGraph{T}) where {T}
     local sorted = zeros(Int64, 0)
     local indices = zeros(Int64, 0)
 

@@ -2,7 +2,7 @@ using Test
 using Spandex
 
 @testset "amd 1" begin
-    local g = Graph{Int64}(3)
+    local g = DirectedGraph{Int64}(3)
     g[1, 1] = 6
     g[1, 2] = -4
     g[1, 3] = 7
@@ -28,7 +28,7 @@ using Spandex
 end
 
 @testset "amd 2" begin
-    local g = Graph{Float64}(5)
+    local g = DirectedGraph{Float64}(5)
     g[1, 1] = 0.44561
     g[1, 2] = 0.92962
     g[4, 2] = 0.87043
