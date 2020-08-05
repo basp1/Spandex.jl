@@ -1,7 +1,7 @@
 using Test
 using Spandex
 
-@testset " push!" begin
+@testset "push!" begin
     local il = Intlist(10)
     push!(il, 1)
     push!(il, 7)

@@ -1,6 +1,8 @@
 export Intlist
 export is_empty, top, next, contains, push!, pop!, pop_all!, clear!
 
+import Base.push!, Base.pop!, Base.contains
+
 const NIL = Int64(-1)
 const EMPTY = Int64(0)
 
@@ -30,7 +32,7 @@ end
     end
 end
 
-@inbounds function contains(il::Intlist, key::Int64)::Bool
+@inbounds function Base.contains(il::Intlist, key::Int64)::Bool
     return key > 0 && key <= il.capacity && EMPTY != il.values[key]
 end
 
